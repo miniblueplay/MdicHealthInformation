@@ -2,46 +2,26 @@ package com.msg.mdic;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.view.Window;
+
+import com.msg.mdic.databinding.ActivityLoginBinding;
 import com.msg.mdic.databinding.ActivityMainBinding;
 
-public class MainActivity extends AppCompatActivity {
+public class login extends AppCompatActivity {
 
-    protected ActivityMainBinding mBinding;
-    //宣告Handler
-    Handler mHandler;
+    protected ActivityLoginBinding mBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
+        setContentView(R.layout.activity_login);
         hideNav();
         //使用ViewBinding後的方法
-        mBinding = ActivityMainBinding.inflate(getLayoutInflater());
+        mBinding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
-        //建立Handler
-        mHandler = new Handler();
-
-        mHandler.postDelayed(jump, 4000); //4秒跳轉
     }
-
-    private static final int GOTO_MAIN_ACTIVITY = 0;
-    /**(子執行序)*/
-    private Runnable jump=new Runnable(){
-        @Override
-        public void run() {
-            Intent intent = new Intent();
-            //將原本Activity的換成MainActivity
-            intent.setClass(MainActivity.this, login.class);
-            startActivity(intent);
-            finish();
-        }
-    };
 
     /**隱藏狀態列和導航欄*/
     public void hideNav() {
@@ -54,14 +34,5 @@ public class MainActivity extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
                         | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-    }
-
-    protected void onDestroy() {
-        //將執行緒銷毀掉
-        super.onDestroy();
-        if ( mHandler != null ) {
-            mHandler.removeCallbacksAndMessages(null);
-            mHandler = null;
-        }
     }
 }
