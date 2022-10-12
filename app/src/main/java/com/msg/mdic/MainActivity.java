@@ -27,11 +27,11 @@ public class MainActivity extends AppCompatActivity {
         //建立Handler
         mHandler = new Handler();
 
-        mHandler.postDelayed(jump, 4000); //4秒跳轉
+        mHandler.postDelayed(jump, 5000); //5秒跳轉
     }
 
     private static final int GOTO_MAIN_ACTIVITY = 0;
-    /**(子執行序)*/
+    /**跳轉頁面(子執行序)*/
     private Runnable jump=new Runnable(){
         @Override
         public void run() {
