@@ -54,6 +54,20 @@ public class login extends AppCompatActivity {
                         startActivity(intent);
                         overridePendingTransition(R.anim.anim_activity_open, 0);
                         finish();
+                    }else{
+                        AlertDialog.Builder alertDialog =
+                                new AlertDialog.Builder(login.this);
+                        alertDialog.setTitle("提示");
+                        alertDialog.setMessage("帳號或密碼錯誤");
+                        alertDialog.setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mBinding.loginAn.setText("");
+                                mBinding.loginPs.setText("");
+                            }
+                        });
+                        alertDialog.setCancelable(false);
+                        alertDialog.show();
                     }
                 }else{
                     AlertDialog.Builder alertDialog =
