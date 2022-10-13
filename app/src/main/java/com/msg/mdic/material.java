@@ -9,11 +9,15 @@ import android.view.Window;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
+import com.msg.mdic.databinding.ActivityLoginBinding;
+import com.msg.mdic.databinding.ActivityMaterialBinding;
 import com.msg.mdic.tool.LineChartData;
 
 import java.util.ArrayList;
 
 public class material extends AppCompatActivity {
+
+    protected ActivityMaterialBinding mBinding;
 
     LineChartData lineChartData;
     LineChart lineChart;
@@ -25,8 +29,11 @@ public class material extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         hideNav();
         setContentView(R.layout.activity_material);
+        //使用ViewBinding後的方法
+        mBinding = ActivityMaterialBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
 
-        lineChart = findViewById(R.id.lineChart);
+        lineChart = mBinding.lineChart;
         lineChartData = new LineChartData(lineChart,this);
 
         xData.add("10" + "/" + 1);

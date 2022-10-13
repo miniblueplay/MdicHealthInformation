@@ -3,6 +3,7 @@ package com.msg.mdic.tool;
 import android.content.Context;
 import android.graphics.Color;
 import android.icu.text.DecimalFormat;
+import android.util.Log;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -34,8 +35,24 @@ public class LineChartData {
                 final LineDataSet set;
                 set = new LineDataSet(valuesY, "");
                 set.setMode(LineDataSet.Mode.LINEAR);//類型為折線
-                set.setColor(Color.GREEN);//線的顏色
+                //set.setColor(Color.GREEN);//線的顏色
+                String str = valuesY.get(i).toString();
+                Log.i("admin var", str.substring(str.indexOf("y: ")+3));
+                //if(Float.parseFloat(str.substring(str.indexOf("y: ")+3)) > 130) {
+                //    set.setCircleColor(Color.RED);//圓點顏色
+                //    set.setColor(Color.RED);//線的顏色
+                //    Log.i("admin color", "RED");
+                //}else if(Float.parseFloat(str.substring(str.indexOf("y: ")+3)) < 120) {
+                //    set.setCircleColor(Color.BLUE);//圓點顏色
+                //    set.setColor(Color.BLUE);//線的顏色
+                //    Log.i("admin color", "BLUE");
+                //}else{
+                //    set.setCircleColor(Color.GREEN);//圓點顏色
+                //    set.setColor(Color.GREEN);//線的顏色
+                //    Log.i("admin color", "GREEN");
+                //}
                 set.setCircleColor(Color.GREEN);//圓點顏色
+                set.setColor(Color.GREEN);//線的顏色
                 set.setCircleRadius(5);//圓點大小
                 set.setDrawCircleHole(true);//圓點為實心(預設空心)
                 set.setLineWidth(1.5f);//線寬
@@ -44,7 +61,7 @@ public class LineChartData {
                 set.setValueFormatter(new DefaultValueFormatter(0));//座標點數字的小數位數0位
 
                 Legend legend = lineChart.getLegend();
-                legend.setEnabled(false);//不顯示圖例 (預設顯示)
+                legend.setEnabled(false);//不顯示圖例
                 Description description = lineChart.getDescription();
                 description.setEnabled(false);//不顯示Description Label (預設顯示)
 
