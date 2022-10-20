@@ -23,7 +23,7 @@ public class MysqlCon {
     private static final String TAG = "MysqlCon";
 
     //連線IP定義
-    private String mysql_ip = "https://health.mdic.ncku.edu.tw";    //資料庫IP  南台："http://120.117.51.242" 成大："https://health.mdic.ncku.edu.tw"
+    private String mysql_ip = "http://120.117.53.18";    //資料庫IP  南台："http://120.117.53.18" 成大："https://health.mdic.ncku.edu.tw"
 
     //AES加密金鑰
     private static  final String mstrTestKey = "vkdogkgmbcpabfvm"; //密碼
@@ -155,20 +155,19 @@ public class MysqlCon {
                 }
             }).start();
             URL url = new URL( mysql_ip +"/AddData.php?data="+AesData);
-            //URL url = new URL( mysql_ip +"/AddData.php?cname="+CNAME+"&CardID="+ID+"&Date="+Date+"&SYS="+SYS+"&DIA="+DIA+"&HR="+HR+"&Res="+Res);
             Log.d(TAG+" url:", String.valueOf(url));
-            // 開始宣告 HTTP 連線需要的物件，這邊通常都是一綑的
+            // 開始宣告 HTTP 連線需要的物件
+            // 建立 HttpURLConnection 物件
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            // 建立 Google 比較挺的 HttpURLConnection 物件
-            connection.setRequestMethod("POST");
             // 設定連線方式為 POST
+            connection.setRequestMethod("POST");
             connection.setDoOutput(true); // 允許輸出
             connection.setDoInput(true); // 允許讀入
             connection.setUseCaches(false); // 不使用快取
             connection.connect(); // 開始連線
-
-            int responseCode = connection.getResponseCode();
             // 建立取得回應的物件
+            int responseCode = connection.getResponseCode();
+
             Log.d(TAG+" DB", String.valueOf(responseCode));
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 Log.v(TAG+" 寫入資料完成", "Name="+name+"CardID="+ID+"Date="+Date+"SYS="+SYS+"DIA="+DIA+"HR="+HR+"Res="+Res);

@@ -88,6 +88,7 @@ public class material extends AppCompatActivity {
         new Thread(() -> {
             MysqlCon Mysql = new MysqlCon();
             Mysql.getData("A0000002");
+            //Mysql.run();
         }).start();
     }
 }
