@@ -9,9 +9,9 @@ import android.view.Window;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
-import com.msg.mdic.databinding.ActivityLoginBinding;
 import com.msg.mdic.databinding.ActivityMaterialBinding;
 import com.msg.mdic.tool.LineChartData;
+import com.msg.mdic.tool.MysqlCon;
 
 import java.util.ArrayList;
 
@@ -32,6 +32,8 @@ public class material extends AppCompatActivity {
         //使用ViewBinding後的方法
         mBinding = ActivityMaterialBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
+
+        UpdateChart();
 
         lineChart = mBinding.lineChart;
         lineChartData = new LineChartData(lineChart,this);
@@ -80,5 +82,12 @@ public class material extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
                         | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+    }
+
+    public void UpdateChart(){
+        new Thread(() -> {
+            MysqlCon Mysql = new MysqlCon();
+            Mysql.getData("A0000002");
+        }).start();
     }
 }
