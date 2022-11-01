@@ -6,6 +6,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
+import android.widget.ListView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
@@ -24,6 +25,9 @@ public class material extends AppCompatActivity {
     ArrayList<String> xData = new ArrayList<>();
     ArrayList<Entry> yData = new ArrayList<>();
 
+    ListView listView;
+    int image[] = {R.drawable.ok, R.drawable.no};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +36,8 @@ public class material extends AppCompatActivity {
         //使用ViewBinding後的方法
         mBinding = ActivityMaterialBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
+
+        listView = mBinding.listData;
 
         UpdateChart();
 
