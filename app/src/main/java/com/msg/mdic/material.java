@@ -1,6 +1,11 @@
 package com.msg.mdic;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -10,11 +15,15 @@ import android.widget.ListView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
+import com.msg.mdic.adapter.RecycleAdapterDome;
 import com.msg.mdic.databinding.ActivityMaterialBinding;
 import com.msg.mdic.tool.LineChartData;
 import com.msg.mdic.tool.MysqlCon;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 
 public class material extends AppCompatActivity {
 
@@ -25,8 +34,12 @@ public class material extends AppCompatActivity {
     ArrayList<String> xData = new ArrayList<>();
     ArrayList<Entry> yData = new ArrayList<>();
 
-    ListView listView;
-    int image[] = {R.drawable.ok, R.drawable.no};
+    private RecyclerView recyclerView;
+    private List<String> list_date;
+    private List<String> list_sys;
+    private List<String> list_dia;
+    private List<String> list_hr;
+    private RecycleAdapterDome adapterDome;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,41 +50,47 @@ public class material extends AppCompatActivity {
         mBinding = ActivityMaterialBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
 
-        listView = mBinding.listData;
-
         UpdateChart();
+
+        RecycleView();
 
         lineChart = mBinding.lineChart;
         lineChartData = new LineChartData(lineChart,this);
 
-        xData.add("10" + "/" + 1);
-        yData.add(new Entry(1-1, 120));
-
-        xData.add("10" + "/" + 2);
-        yData.add(new Entry(2-1, 125));
-
-        xData.add("10" + "/" + 3);
-        yData.add(new Entry(3-1, 114));
-
-        xData.add("10" + "/" + 4);
-        yData.add(new Entry(4-1, 121));
-
-        xData.add("10" + "/" + 5);
-        yData.add(new Entry(5-1, 119));
-
-        xData.add("10" + "/" + 6);
-        yData.add(new Entry(6-1, 135));
-
-        xData.add("10" + "/" + 7);
-        yData.add(new Entry(7-1, 126));
-
-        xData.add("10" + "/" + 8);
-        yData.add(new Entry(8-1, 120));
-
+        for (int i = 1; i < 15; i++) {
+            xData.add("11" + "/" + i);
+            yData.add(new Entry(i-1, new Random().nextInt(40) + 90));
+        }
 
         lineChartData.initX(xData);
         lineChartData.initY(90F,140F);
         lineChartData.initDataSet(yData);
+    }
+
+    public void RecycleView(){
+        recyclerView = findViewById(R.id.rv_data);
+        list_date = new ArrayList<>();
+        list_sys = new ArrayList<>();
+        list_dia = new ArrayList<>();
+        list_hr = new ArrayList<>();
+        for (int i = 1; i < 30; i++) {
+            if(i < 10)
+                list_date.add("2022/11/0"+i);
+            else
+                list_date.add("2022/11/"+i);
+            list_sys.add(String.valueOf(new Random().nextInt(60) + 100));
+            list_dia.add(String.valueOf(new Random().nextInt(60) + 100));
+            list_hr.add(String.valueOf(new Random().nextInt(40) + 70));
+        }
+        adapterDome = new RecycleAdapterDome(this,list_date, list_sys, list_dia, list_hr);
+        //LinearLayoutManager manager = new LinearLayoutManager(this);
+        StaggeredGridLayoutManager stagger = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(stagger);
+        //添加自定义分割线
+        //recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
+        recyclerView.setAdapter(adapterDome);
     }
 
     /**隱藏狀態列和導航欄*/

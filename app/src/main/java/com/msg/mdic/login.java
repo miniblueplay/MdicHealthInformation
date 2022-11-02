@@ -45,11 +45,20 @@ public class login extends AppCompatActivity {
         mBinding.loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //開發暫時跳過驗證
+                Intent intent = new Intent();
+                intent.setClass(login.this, material.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.anim_activity_open, 0);
+                finish();
+
+
                 if(mBinding.loginAn.length() != 0 && mBinding.loginPs.length() != 0)
                 {
                     if(mBinding.loginAn.getText().toString().equals("admin") && mBinding.loginPs.getText().toString().equals("1234"))
                     {
-                        Intent intent = new Intent();
+                        //Intent intent = new Intent();
                         intent.setClass(login.this, material.class);
                         startActivity(intent);
                         overridePendingTransition(R.anim.anim_activity_open, 0);
