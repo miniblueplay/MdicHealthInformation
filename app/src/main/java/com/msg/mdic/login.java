@@ -48,18 +48,19 @@ public class login extends AppCompatActivity {
 
                 //開發暫時跳過驗證
                 Intent intent = new Intent();
-                intent.setClass(login.this, material.class);
+                intent.setClass(login.this, field.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.anim_activity_open, 0);
                 finish();
 
 
+                if(false)
                 if(mBinding.loginAn.length() != 0 && mBinding.loginPs.length() != 0)
                 {
                     if(mBinding.loginAn.getText().toString().equals("admin") && mBinding.loginPs.getText().toString().equals("1234"))
                     {
                         //Intent intent = new Intent();
-                        intent.setClass(login.this, material.class);
+                        intent.setClass(login.this, field.class);
                         startActivity(intent);
                         overridePendingTransition(R.anim.anim_activity_open, 0);
                         finish();

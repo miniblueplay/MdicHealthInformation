@@ -55,10 +55,7 @@ public class material extends AppCompatActivity {
 
         UpdateChart();
 
-
         list_sys = new ArrayList<>();
-
-
 
         lineChart = mBinding.lineChart;
         lineChartData = new LineChartData(lineChart,this);
