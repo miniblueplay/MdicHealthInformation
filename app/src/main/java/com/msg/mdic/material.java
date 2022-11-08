@@ -127,8 +127,8 @@ public class material extends AppCompatActivity {
 
     public void UpdateChart(){
         new Thread(() -> {
-            MysqlCon Mysql = new MysqlCon();
-            Mysql.getData("A0000002");
+            //MysqlCon Mysql = new MysqlCon();
+            //Mysql.getData("A0000002");
             //Mysql.run();
         }).start();
     }

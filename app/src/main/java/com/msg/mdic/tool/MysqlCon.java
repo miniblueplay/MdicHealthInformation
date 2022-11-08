@@ -17,13 +17,14 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MysqlCon {
     private static final String TAG = "MysqlCon";
 
     //連線IP定義
-    private String mysql_ip = "http://120.117.53.18";    //資料庫IP  南台："http://120.117.53.18" 成大："https://health.mdic.ncku.edu.tw"
+    private String mysql_ip = "https://health.mdic.ncku.edu.tw";    //資料庫IP  南台："http://120.117.53.18" 成大："https://health.mdic.ncku.edu.tw"
 
     //AES加密金鑰
     private static  final String mstrTestKey = "vkdogkgmbcpabfvm"; //密碼
@@ -69,11 +70,11 @@ public class MysqlCon {
         }
     }
 
-    public void getData(String input_id) {
-        Log.v(TAG+" ID",input_id);
+    public String getData(String php, String name,  String id, String lad) {
+        Log.v(TAG+" ID",id);
         userdata resultUserdata = new userdata();
         try {
-            URL url = new URL(mysql_ip + "/Login.php?CardID=" + input_id);
+            URL url = new URL(mysql_ip + "/" + php + ".php?" + name + "=" + id);
             // 開始宣告 HTTP 連線需要的物件，這邊通常都是一綑的
             Log.d(TAG+" URL", String.valueOf(url));
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -98,45 +99,117 @@ public class MysqlCon {
                 while ((line = bufReader.readLine()) != null) {
                     Log.d(TAG+" LINE",line);
                     JSONObject jobject = new JSONObject(line);
-                    JSONObject result1 = jobject.getJSONObject("result1");
-                    resultUserdata.Name = result1.getString("cname");
-                    resultUserdata.CardID = result1.getString("CardID");
-                    resultUserdata.Gender = result1.getString("gender");
-                    resultUserdata.Hypertension = result1.getString("Hypertension");
-                    resultUserdata.Medicine = result1.getString("Medicine");
-                    resultUserdata.birthday = result1.getString("birthday");
+                    if(!lad.equals("height") && !lad.equals("weight"))
+                    {
+                        JSONObject result1 = jobject.getJSONObject("result1");
+                        try {
+                            String da = result1.getString(lad);
+                            Log.d(TAG+" getData",da);
+                            return da;
+                        } catch (Exception e) {
+                            Log.d(TAG+" getData","查無資料");
+                            return "null";
+                        }
+                    } else {
+                        JSONArray result2 = jobject.getJSONArray("result2");
+                        for(int i=0;i<result2.length();i++){
+                            JSONObject data = result2.getJSONObject(i);
+                            Map<String,String> test = new HashMap<String,String>();
+                            String type = data.getString("type");
+                            String height = data.getString("height");
+                            String weight = data.getString("weight");
+                            test.put("type",type);
+                            test.put("height",height);
+                            test.put("weight",weight);
+                            resultUserdata.test.put(type,test);
+                        }
 
-                    JSONArray result2 = jobject.getJSONArray("result2");
-                    for(int i=0;i<result2.length();i++){
-                        JSONObject data = result2.getJSONObject(i);
-                        Map<String,String> test = new HashMap<String,String>();
-                        String type = data.getString("type");
-                        String height = data.getString("height");
-                        String weight = data.getString("weight");
-                        test.put("type",type);
-                        test.put("height",height);
-                        test.put("weight",weight);
-                        resultUserdata.test.put(type,test);
+                        if(!resultUserdata.test.get("後測").get("height").equals("null"))
+                            resultUserdata.Height = resultUserdata.test.get("後測").get("height");
+                        else
+                            resultUserdata.Height = resultUserdata.test.get("前測").get("height");
+                        if(!resultUserdata.test.get("後測").get("weight").equals("null"))
+                            resultUserdata.Weight = resultUserdata.test.get("後測").get("weight");
+                        else
+                            resultUserdata.Weight = resultUserdata.test.get("前測").get("weight");
+
+                        if(lad.equals("height"))return resultUserdata.Height;
+                        else return resultUserdata.Weight;
                     }
                 }
                 inputStream.close(); // 關閉輸入串流
             }
-
-            if(!resultUserdata.test.get("後測").get("height").equals("null"))
-                resultUserdata.Height = resultUserdata.test.get("後測").get("height");
-            else
-                resultUserdata.Height = resultUserdata.test.get("前測").get("height");
-            if(!resultUserdata.test.get("後測").get("weight").equals("null"))
-                resultUserdata.Weight = resultUserdata.test.get("後測").get("weight");
-            else
-                resultUserdata.Weight = resultUserdata.test.get("前測").get("weight");
-
-            // 讀取輸入串流並存到字串的部分
-            // 取得資料後想用不同的格式
-            // 例如 Json 等等，都是在這一段做處理
+            Log.d(TAG+" getData","查無資料");
+            return "null";
         } catch (Exception e) {
             Log.d(TAG+" getData","取得資料失敗");
             Log.d(TAG+" DB", e.toString());
+            return "null";
+        }
+    }
+
+    public Map<String,String> getDataArray(String php, String lab) {
+        Log.v(TAG+" php", php);
+        Map<String,String> ret = new HashMap<String,String>();
+        try {
+            URL url = new URL(mysql_ip + "/" + php + ".php?");
+            if(lab.length() != 0)
+                url = new URL(mysql_ip + "/" + php + ".php?field_id=" + lab);
+            // 開始宣告 HTTP 連線需要的物件，這邊通常都是一綑的
+            Log.d(TAG+" URL", String.valueOf(url));
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            // 建立 Google 比較挺的 HttpURLConnection 物件
+            connection.setRequestMethod("POST");
+            // 設定連線方式為 POST
+            connection.setDoOutput(true); // 允許輸出
+            connection.setDoInput(true); // 允許讀入
+            connection.setUseCaches(false); // 不使用快取
+            connection.connect(); // 開始連線
+
+            int responseCode = connection.getResponseCode();
+            // 建立取得回應的物件
+            Log.d(TAG+" DB", String.valueOf(responseCode));
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // 如果 HTTP 回傳狀態是 OK ，而不是 Error
+                InputStream inputStream = connection.getInputStream();
+                // 取得輸入串流
+                BufferedReader bufReader = new BufferedReader(new InputStreamReader(inputStream, "utf-8"), 8);
+                // 讀取輸入串流的資料
+                String line = null; // 宣告讀取用的字串
+                while ((line = bufReader.readLine()) != null) {
+                    Log.d(TAG+" LINE",line);
+                    JSONObject jobject = new JSONObject(line);
+
+                    if(php.equals("Field_id")) {
+                        JSONArray result1 = jobject.getJSONArray("result1");
+                        for(int i=0;i<result1.length();i++){
+                            JSONObject data = result1.getJSONObject(i);
+                            String field_id = data.getString("field_id");
+                            String field_name = data.getString("field_name");
+                            if(field_name.length() != 0)
+                                ret.put(field_id,field_name);
+                            Log.i(TAG+" field_name", field_name + " field_id: " + field_id);
+                        }
+                    }
+                    if(php.equals("GetData")){
+                        JSONArray result = jobject.getJSONArray("result2");
+                        for(int i=0;i<result.length();i++){
+                            JSONObject data = result.getJSONObject(i);
+                            String CardID = data.getString("CardID");
+                            String cname = data.getString("cname");
+                            if(CardID.length() != 0)
+                                ret.put(CardID,cname);
+                            Log.i(TAG+" User", cname + " CardID: " + CardID);
+                        }
+                    }
+                }
+                inputStream.close(); // 關閉輸入串流
+            }
+            return ret;
+        } catch (Exception e) {
+            Log.d(TAG+" getData","取得資料失敗");
+            Log.d(TAG+" DB", e.toString());
+            return ret;
         }
     }
 

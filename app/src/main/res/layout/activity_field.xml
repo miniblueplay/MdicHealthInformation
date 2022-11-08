@@ -5,12 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".field"
-    android:padding="15dp">
+    android:padding="25dp"
+    android:background="#d1ede1"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:padding="5dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -19,7 +22,24 @@
             android:textColor="@color/ash"
             android:textSize="30sp"/>
 
+        <Spinner
+            android:id="@+id/spinner_field"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"/>
+    </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/corners_bg">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_data"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/corners_bg"/>
     </LinearLayout>
 
 </LinearLayout>
