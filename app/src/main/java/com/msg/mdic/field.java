@@ -6,14 +6,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -21,17 +19,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.msg.mdic.adapter.RecycleAdapterDome;
 import com.msg.mdic.adapter.RecycleAdapterDomeUser;
 import com.msg.mdic.tool.MysqlCon;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
-public class field extends AppCompatActivity {
+public class field extends AppCompatActivity  implements RecycleAdapterDomeUser.OnItemClickHandler{
 
     //宣告Handler
     HandlerThread myHandlerThread;
@@ -48,7 +44,7 @@ public class field extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecycleAdapterDomeUser adapterDome;
 
-    private String field_ID = "bMOrsneMMC"; //院內肌少症IbCrGImgeD
+    private String field_ID; //院內肌少症IbCrGImgeD
     private Map<String,String> NameList;
     private Map<String,String> FieldList;
 
@@ -89,7 +85,22 @@ public class field extends AppCompatActivity {
 
         mHandler.sendEmptyMessage( 1 ) ;
 
+    }
 
+    // 點擊事件
+    @Override
+    public void onItemClick(String text) {
+        // text即為點擊的內容，可在此顯示Toast或其他處理
+        //Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(field.this,material.class);
+        intent.putExtra("USER_CARDID", text);
+        startActivity(intent);
+    }
+
+    // 移除事件
+    @Override
+    public void onItemRemove(int position, String text) {
+        // do something...
     }
 
     private Runnable runnable=new Runnable(){
@@ -109,6 +120,7 @@ public class field extends AppCompatActivity {
         context = this;
     }
 
+    /**(場域)下拉式選單*/
     private void initialAdapter(Map<String,String> field_list) {
         FieldList = field_list;
         list_name = new ArrayList<String>();
@@ -147,6 +159,7 @@ public class field extends AppCompatActivity {
 
     }
 
+    /**人員名單*/
     public void RecycleView(Map<String,String> field){
         Context context = this;
         List<String> CardID = new ArrayList<>();
@@ -160,7 +173,7 @@ public class field extends AppCompatActivity {
             CardID.add(key);
             cname.add(value);
         }
-        adapterDome = new RecycleAdapterDomeUser(context, CardID, cname);
+        adapterDome = new RecycleAdapterDomeUser(context, CardID, cname, this);
         //LinearLayoutManager manager = new LinearLayoutManager(this);
         StaggeredGridLayoutManager stagger = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(stagger);
@@ -187,7 +200,7 @@ public class field extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
     }
 
-    //結束時
+    /**結束時*/
     protected void onDestroy() {
         //將執行緒銷毀掉
         super.onDestroy();

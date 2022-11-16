@@ -24,7 +24,8 @@ public class MysqlCon {
     private static final String TAG = "MysqlCon";
 
     //連線IP定義
-    private String mysql_ip = "https://health.mdic.ncku.edu.tw";    //資料庫IP  南台："http://120.117.53.18" 成大："https://health.mdic.ncku.edu.tw"
+    private String mysql_ip = "https://health.mdic.ncku.edu.tw";
+    //資料庫IP  南台："http://120.117.53.18" 成大："https://health.mdic.ncku.edu.tw"
 
     //AES加密金鑰
     private static  final String mstrTestKey = "vkdogkgmbcpabfvm"; //密碼
@@ -32,7 +33,6 @@ public class MysqlCon {
 
     //連線狀態
     boolean connect = false;
-
 
     public void run() {
         Log.i(TAG+" DB","連接中");
@@ -71,7 +71,7 @@ public class MysqlCon {
     }
 
     public String getData(String php, String name,  String id, String lad) {
-        Log.v(TAG+" ID",id);
+        Log.v(TAG+" php", php + " ID = " + id);
         userdata resultUserdata = new userdata();
         try {
             URL url = new URL(mysql_ip + "/" + php + ".php?" + name + "=" + id);

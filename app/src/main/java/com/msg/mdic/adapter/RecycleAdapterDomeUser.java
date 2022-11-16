@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,21 +23,43 @@ public class RecycleAdapterDomeUser extends RecyclerView.Adapter<RecycleAdapterD
     private List<String> cname;
     private View inflater;
 
+    // 宣告interface
+    private OnItemClickHandler mClickHandler;
+
+    // 建立interface，命名為OnItemClickHandler，並在裡面寫好我們要發生的事件
+    public interface OnItemClickHandler {
+        // 提供onItemClick方法作為點擊事件，括號內為接受的參數
+        void onItemClick(String text);
+        // 提供onItemRemove做為移除項目的事件
+        void onItemRemove(int position, String text);
+    }
+
     class MyViewHolder extends RecyclerView.ViewHolder{
         TextView textView_CardID;
         TextView textView_cname;
         public MyViewHolder(View itemView) {
             super(itemView);
-            //textView_CardID = (TextView) itemView.findViewById(R.id.text_date);
+            textView_CardID = (TextView) itemView.findViewById(R.id.card_id);
             textView_cname = (TextView) itemView.findViewById(R.id.name);
+
+            // 點擊項目時
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String msg = CardID.get(getAdapterPosition());
+                    // 呼叫interface的method
+                    mClickHandler.onItemClick(msg);
+                }
+            });
         }
     }
 
     //構造方法，傳入數據
-    public RecycleAdapterDomeUser(Context context, List<String> CardID, List<String> list_sys){
+    public RecycleAdapterDomeUser(Context context, List<String> CardID, List<String> cname, OnItemClickHandler clickHandler){
         this.context = context;
         this.CardID = CardID;
-        this.cname = list_sys;
+        this.cname = cname;
+        mClickHandler = clickHandler;
     }
 
     @NonNull
@@ -51,7 +74,7 @@ public class RecycleAdapterDomeUser extends RecyclerView.Adapter<RecycleAdapterD
     @Override
     public void onBindViewHolder(@NonNull RecycleAdapterDomeUser.MyViewHolder holder, int position) {
         //將數據和控件綁定
-        //holder.textView_date.setText(CardID.get(position));
+        holder.textView_CardID.setText(CardID.get(position));
         holder.textView_cname.setText(cname.get(position));
     }
 

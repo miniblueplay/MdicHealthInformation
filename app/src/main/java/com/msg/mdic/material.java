@@ -7,9 +7,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -31,11 +35,20 @@ public class material extends AppCompatActivity {
 
     protected ActivityMaterialBinding mBinding;
 
+    //宣告Handler
+    HandlerThread myHandlerThread;
+    private Handler mHandler;
+
+    //PHP
+    private MysqlCon Mysql;
+
+    //折線圖
     LineChartData lineChartData;
     LineChart lineChart;
     ArrayList<String> xData = new ArrayList<>();
     ArrayList<Entry> yData = new ArrayList<>();
 
+    //RecyclerList
     private RecyclerView recyclerView;
     private List<String> list_date;
     private List<String> list_sys;
@@ -44,14 +57,27 @@ public class material extends AppCompatActivity {
     private List<Drawable> list_IV;
     private RecycleAdapterDome adapterDome;
 
+    //用戶
+    private String UserCardID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         hideNav();
         setContentView(R.layout.activity_material);
+
         //使用ViewBinding後的方法
         mBinding = ActivityMaterialBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
+
+        Intent intent = getIntent();
+        UserCardID = intent.getStringExtra("USER_CARDID");
+
+        //建立HandlerThread
+        myHandlerThread = new HandlerThread( "PHP-SQL") ;
+        myHandlerThread.start();
+
+        Mysql = new MysqlCon();
 
         UpdateChart();
 
@@ -126,10 +152,26 @@ public class material extends AppCompatActivity {
     }
 
     public void UpdateChart(){
-        new Thread(() -> {
-            //MysqlCon Mysql = new MysqlCon();
-            //Mysql.getData("A0000002");
-            //Mysql.run();
-        }).start();
+        mHandler = new Handler( myHandlerThread.getLooper() ){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                switch(msg.what){
+                    case 1:
+                        //抓取姓名
+                        mBinding.name.setText(Mysql.getData("Login", "CardID", UserCardID, "cname"));
+                        //initialAdapter(Mysql.getDataArray("Field_id", ""));
+                        break;
+                    case 2:
+                        //NameList = Mysql.getDataArray("GetData", field_ID);
+                        //mHandler.post(runnable);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        };
+
+        mHandler.sendEmptyMessage( 1 ) ;
     }
 }
