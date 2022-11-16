@@ -28,8 +28,10 @@ import com.msg.mdic.tool.MysqlCon;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.Set;
 
 public class material extends AppCompatActivity {
 
@@ -54,11 +56,13 @@ public class material extends AppCompatActivity {
     private List<String> list_sys;
     private List<String> list_dia;
     private List<String> list_hr;
+    private List<String> list_res;
     private List<Drawable> list_IV;
     private RecycleAdapterDome adapterDome;
 
     //用戶
     private String UserCardID;
+    private Map<String,String> UserData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,38 +92,37 @@ public class material extends AppCompatActivity {
 
         for (int i = 1; i < 30; i++) {
             int sys = new Random().nextInt(15) + 130;
-            list_sys.add(String.valueOf(sys));
-            xData.add("11" + "/" + i);
-            yData.add(new Entry(i-1, sys));
+            //list_sys.add(String.valueOf(sys));
+            //xData.add("11" + "/" + i);
+            //yData.add(new Entry(i-1, sys));
         }
 
         lineChartData.initX(xData);
         lineChartData.initY(90F,140F);
         lineChartData.initDataSet(yData);
-
-        RecycleView(list_sys);
     }
 
-    public void RecycleView(List<String> list_sys){
+    public void RecycleView(){
         recyclerView = findViewById(R.id.rv_data);
         list_date = new ArrayList<>();
-        //list_sys = new ArrayList<>();
+        list_sys = new ArrayList<>();
         list_dia = new ArrayList<>();
         list_hr = new ArrayList<>();
+        list_res = new ArrayList<>();
         list_IV = new ArrayList<>();
-        for (int i = 1; i < 30; i++) {
-            if(i < 10)
-                list_date.add("2022/11/0"+i);
-            else
-                list_date.add("2022/11/"+i);
-            //int sys = new Random().nextInt(50) + 100;
-            int dia = new Random().nextInt(35) + 60;
-            int hr = new Random().nextInt(45) + 60;
-            //list_sys.add(String.valueOf(sys));
-            list_dia.add(String.valueOf(dia));
-            list_hr.add(String.valueOf(hr));
-            //Log.d("sys", list_sys.get(i-1));
-            if(Integer.parseInt(list_sys.get(i-1)) > 140 || dia > 90 || hr > 100)
+        //獲取map集合中的所有鍵的Set集合, keySet()
+        Set<String> keySet = UserData.keySet();
+        //有了set集合就可以獲取迭代器
+        for (String key : keySet) {
+            //有了鍵就可以通過map集合的get方法獲取其對應的値
+            String value = UserData.get(key);
+            list_date.add(key);
+            String[] detailed = value.split("\\s+");
+            list_sys.add(detailed[0]);
+            list_dia.add(detailed[1]);
+            list_hr.add(detailed[2]);
+            list_res.add(detailed[3]);
+            if(detailed[3].equals("0"))
                 list_IV.add(getResources().getDrawable(R.drawable.no));
             else
                 list_IV.add(getResources().getDrawable(R.drawable.ok));
@@ -160,6 +163,13 @@ public class material extends AppCompatActivity {
                     case 1:
                         //抓取姓名
                         mBinding.name.setText(Mysql.getData("Login", "CardID", UserCardID, "cname"));
+                        UserData = Mysql.getDataArray("Field_GetUserData", UserCardID);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                RecycleView();
+                            }
+                        });
                         //initialAdapter(Mysql.getDataArray("Field_id", ""));
                         break;
                     case 2:

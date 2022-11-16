@@ -153,8 +153,10 @@ public class MysqlCon {
         Map<String,String> ret = new HashMap<String,String>();
         try {
             URL url = new URL(mysql_ip + "/" + php + ".php?");
-            if(lab.length() != 0)
+            if(lab.length() == 10)
                 url = new URL(mysql_ip + "/" + php + ".php?field_id=" + lab);
+            else if(lab.length() == 8)
+                url = new URL(mysql_ip + "/" + php + ".php?CardID=" + lab);
             // 開始宣告 HTTP 連線需要的物件，這邊通常都是一綑的
             Log.d(TAG+" URL", String.valueOf(url));
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -191,7 +193,7 @@ public class MysqlCon {
                             Log.i(TAG+" field_name", field_name + " field_id: " + field_id);
                         }
                     }
-                    if(php.equals("GetData")){
+                    if(php.equals("Field_GetUserName")){
                         JSONArray result = jobject.getJSONArray("result2");
                         for(int i=0;i<result.length();i++){
                             JSONObject data = result.getJSONObject(i);
@@ -200,6 +202,17 @@ public class MysqlCon {
                             if(CardID.length() != 0)
                                 ret.put(CardID,cname);
                             Log.i(TAG+" User", cname + " CardID: " + CardID);
+                        }
+                    }
+                    if(php.equals("Field_GetUserData")){
+                        JSONArray result = jobject.getJSONArray("result2");
+                        for(int i=0;i<result.length();i++){
+                            JSONObject data = result.getJSONObject(i);
+                            String Date = data.getString("Date");
+                            String Data = data.getString("SYS") + " " +data.getString("DIA") + " " +data.getString("HR") + " " +data.getString("Res");
+                            if(Date.length() != 0)
+                                ret.put(Date,Data);
+                            Log.i(TAG+" User", Date + " Data: " + Data);
                         }
                     }
                 }

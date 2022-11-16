@@ -74,7 +74,7 @@ public class field extends AppCompatActivity  implements RecycleAdapterDomeUser.
                         initialAdapter(Mysql.getDataArray("Field_id", ""));
                         break;
                     case 2:
-                        NameList = Mysql.getDataArray("GetData", field_ID);
+                        NameList = Mysql.getDataArray("Field_GetUserName", field_ID);
                         mHandler.post(runnable);
                         break;
                     default:
