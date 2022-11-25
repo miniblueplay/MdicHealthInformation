@@ -150,12 +150,12 @@ public class MysqlCon {
 
     public Map<String,String> getDataArray(String php, String lab) {
         Log.v(TAG+" php", php);
-        Map<String,String> ret = new HashMap<String,String>();
+        Map<String,String> ret = new HashMap<>();
         try {
             URL url = new URL(mysql_ip + "/" + php + ".php?");
-            if(lab.length() == 10)
+            if(lab.length() == 10) //場域
                 url = new URL(mysql_ip + "/" + php + ".php?field_id=" + lab);
-            else if(lab.length() == 8)
+            else if(lab.length() == 8) //卡片ID
                 url = new URL(mysql_ip + "/" + php + ".php?CardID=" + lab);
             // 開始宣告 HTTP 連線需要的物件，這邊通常都是一綑的
             Log.d(TAG+" URL", String.valueOf(url));
@@ -188,31 +188,37 @@ public class MysqlCon {
                             JSONObject data = result1.getJSONObject(i);
                             String field_id = data.getString("field_id");
                             String field_name = data.getString("field_name");
-                            if(field_name.length() != 0)
+                            if(field_name.length() != 0 && field_id.length() != 0){
                                 ret.put(field_id,field_name);
-                            Log.i(TAG+" field_name", field_name + " field_id: " + field_id);
+                                Log.i(TAG+" field_name", field_name + " field_id : " + field_id);
+                            }
                         }
                     }
                     if(php.equals("Field_GetUserName")){
                         JSONArray result = jobject.getJSONArray("result2");
                         for(int i=0;i<result.length();i++){
                             JSONObject data = result.getJSONObject(i);
+                            String Birthday = data.getString("birthday");
                             String CardID = data.getString("CardID");
-                            String cname = data.getString("cname");
-                            if(CardID.length() != 0)
-                                ret.put(CardID,cname);
-                            Log.i(TAG+" User", cname + " CardID: " + CardID);
+                            String Cname = data.getString("cname");
+                            if(CardID.length() != 0 && Cname.length() != 0){
+                                ret.put(CardID, Cname + " " + Birthday);
+                                Log.i(TAG+" User ", Cname + " CardID : " + CardID + " Birthday : " + Birthday);
+                            }
                         }
                     }
                     if(php.equals("Field_GetUserData")){
-                        JSONArray result = jobject.getJSONArray("result2");
-                        for(int i=0;i<result.length();i++){
-                            JSONObject data = result.getJSONObject(i);
-                            String Date = data.getString("Date");
-                            String Data = data.getString("SYS") + " " +data.getString("DIA") + " " +data.getString("HR") + " " +data.getString("Res");
-                            if(Date.length() != 0)
-                                ret.put(Date,Data);
-                            Log.i(TAG+" User", Date + " Data: " + Data);
+                        JSONArray result1 = jobject.getJSONArray("result1");
+                        JSONObject result2 = jobject.getJSONObject("result2");
+                        for(int i=0;i<result1.length();i++){
+                            JSONObject data1 = result1.getJSONObject(i);
+                            String Date = data1.getString("Date");
+                            if(Date.length() != 0){
+                                String Data = data1.getString("SYS") + " " +data1.getString("DIA") + " " +data1.getString("HR") + " " + data1.getString("Res");
+                                Data = Data + " " + result2.getString("Hypertension") + " " + result2.getString("Medicine");
+                                ret.put(Date, Data);
+                                Log.i(TAG+" Time ", Date + " Data : " + Data);
+                            }
                         }
                     }
                 }

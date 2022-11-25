@@ -35,22 +35,8 @@ public class LineChartData {
                 final LineDataSet set;
                 set = new LineDataSet(valuesY, "");
                 set.setMode(LineDataSet.Mode.LINEAR);//類型為折線
-                //set.setColor(Color.GREEN);//線的顏色
                 String str = valuesY.get(i).toString();
                 Log.i("admin var", str.substring(str.indexOf("y: ")+3));
-                //if(Float.parseFloat(str.substring(str.indexOf("y: ")+3)) > 130) {
-                //    set.setCircleColor(Color.RED);//圓點顏色
-                //    set.setColor(Color.RED);//線的顏色
-                //    Log.i("admin color", "RED");
-                //}else if(Float.parseFloat(str.substring(str.indexOf("y: ")+3)) < 120) {
-                //    set.setCircleColor(Color.BLUE);//圓點顏色
-                //    set.setColor(Color.BLUE);//線的顏色
-                //    Log.i("admin color", "BLUE");
-                //}else{
-                //    set.setCircleColor(Color.GREEN);//圓點顏色
-                //    set.setColor(Color.GREEN);//線的顏色
-                //    Log.i("admin color", "GREEN");
-                //}
                 set.setCircleColor(Color.GREEN);//圓點顏色
                 set.setColor(Color.GREEN);//線的顏色
                 set.setCircleRadius(5);//圓點大小

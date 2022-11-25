@@ -21,6 +21,7 @@ public class RecycleAdapterDomeUser extends RecyclerView.Adapter<RecycleAdapterD
     private Context context;
     private List<String> CardID;
     private List<String> cname;
+    private List<String> Birthday;
     private View inflater;
 
     // 宣告interface
@@ -35,11 +36,11 @@ public class RecycleAdapterDomeUser extends RecyclerView.Adapter<RecycleAdapterD
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder{
-        TextView textView_CardID;
+        TextView textView_birthday;
         TextView textView_cname;
         public MyViewHolder(View itemView) {
             super(itemView);
-            textView_CardID = (TextView) itemView.findViewById(R.id.card_id);
+            textView_birthday = (TextView) itemView.findViewById(R.id.birthday);
             textView_cname = (TextView) itemView.findViewById(R.id.name);
 
             // 點擊項目時
@@ -55,10 +56,11 @@ public class RecycleAdapterDomeUser extends RecyclerView.Adapter<RecycleAdapterD
     }
 
     //構造方法，傳入數據
-    public RecycleAdapterDomeUser(Context context, List<String> CardID, List<String> cname, OnItemClickHandler clickHandler){
+    public RecycleAdapterDomeUser(Context context, List<String> CardID, List<String> Cname, List<String> Birthday, OnItemClickHandler clickHandler){
         this.context = context;
         this.CardID = CardID;
-        this.cname = cname;
+        this.cname = Cname;
+        this.Birthday = Birthday;
         mClickHandler = clickHandler;
     }
 
@@ -74,7 +76,7 @@ public class RecycleAdapterDomeUser extends RecyclerView.Adapter<RecycleAdapterD
     @Override
     public void onBindViewHolder(@NonNull RecycleAdapterDomeUser.MyViewHolder holder, int position) {
         //將數據和控件綁定
-        holder.textView_CardID.setText(CardID.get(position));
+        holder.textView_birthday.setText(Birthday.get(position));
         holder.textView_cname.setText(cname.get(position));
     }
 

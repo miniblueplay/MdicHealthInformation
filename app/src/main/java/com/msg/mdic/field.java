@@ -71,9 +71,11 @@ public class field extends AppCompatActivity  implements RecycleAdapterDomeUser.
                 super.handleMessage(msg);
                 switch(msg.what){
                     case 1:
+                        //下拉式選單
                         initialAdapter(Mysql.getDataArray("Field_id", ""));
                         break;
                     case 2:
+                        //用戶資訊
                         NameList = Mysql.getDataArray("Field_GetUserName", field_ID);
                         mHandler.post(runnable);
                         break;
@@ -164,16 +166,19 @@ public class field extends AppCompatActivity  implements RecycleAdapterDomeUser.
         Context context = this;
         List<String> CardID = new ArrayList<>();
         List<String> cname = new ArrayList<>();
+        List<String> Birthday = new ArrayList<>();
         //獲取map集合中的所有鍵的Set集合, keySet()
         Set<String> keySet = field.keySet();
         //有了set集合就可以獲取迭代器
         for (String key : keySet) {
+            CardID.add(key);
             //有了鍵就可以通過map集合的get方法獲取其對應的値
             String value = field.get(key);
-            CardID.add(key);
-            cname.add(value);
+            String[] detailed = value.split("\\s+");
+            cname.add(detailed[0]);
+            Birthday.add(detailed[1]);
         }
-        adapterDome = new RecycleAdapterDomeUser(context, CardID, cname, this);
+        adapterDome = new RecycleAdapterDomeUser(context, CardID, cname, Birthday, this);
         //LinearLayoutManager manager = new LinearLayoutManager(this);
         StaggeredGridLayoutManager stagger = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(stagger);

@@ -52,17 +52,18 @@ public class material extends AppCompatActivity {
 
     //RecyclerList
     private RecyclerView recyclerView;
-    private List<String> list_date;
-    private List<String> list_sys;
-    private List<String> list_dia;
-    private List<String> list_hr;
-    private List<String> list_res;
-    private List<Drawable> list_IV;
     private RecycleAdapterDome adapterDome;
 
     //用戶
     private String UserCardID;
     private Map<String,String> UserData;
+    int MeasurementTimes = 0, MeasurementTimesDeviant = 0;
+    private final List<String> list_date = new ArrayList<>();
+    private final List<String> list_sys = new ArrayList<>();
+    private final List<String> list_dia = new ArrayList<>();
+    private final List<String> list_hr = new ArrayList<>();
+    private final List<String> list_res = new ArrayList<>();
+    private final List<Drawable> list_IV = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,48 +86,10 @@ public class material extends AppCompatActivity {
 
         UpdateChart();
 
-        list_sys = new ArrayList<>();
-
-        lineChart = mBinding.lineChart;
-        lineChartData = new LineChartData(lineChart,this);
-
-        for (int i = 1; i < 30; i++) {
-            int sys = new Random().nextInt(15) + 130;
-            //list_sys.add(String.valueOf(sys));
-            //xData.add("11" + "/" + i);
-            //yData.add(new Entry(i-1, sys));
-        }
-
-        lineChartData.initX(xData);
-        lineChartData.initY(90F,140F);
-        lineChartData.initDataSet(yData);
     }
 
     public void RecycleView(){
         recyclerView = findViewById(R.id.rv_data);
-        list_date = new ArrayList<>();
-        list_sys = new ArrayList<>();
-        list_dia = new ArrayList<>();
-        list_hr = new ArrayList<>();
-        list_res = new ArrayList<>();
-        list_IV = new ArrayList<>();
-        //獲取map集合中的所有鍵的Set集合, keySet()
-        Set<String> keySet = UserData.keySet();
-        //有了set集合就可以獲取迭代器
-        for (String key : keySet) {
-            //有了鍵就可以通過map集合的get方法獲取其對應的値
-            String value = UserData.get(key);
-            list_date.add(key);
-            String[] detailed = value.split("\\s+");
-            list_sys.add(detailed[0]);
-            list_dia.add(detailed[1]);
-            list_hr.add(detailed[2]);
-            list_res.add(detailed[3]);
-            if(detailed[3].equals("0"))
-                list_IV.add(getResources().getDrawable(R.drawable.no));
-            else
-                list_IV.add(getResources().getDrawable(R.drawable.ok));
-        }
         adapterDome = new RecycleAdapterDome(this,list_date, list_sys, list_dia, list_hr, list_IV);
         //LinearLayoutManager manager = new LinearLayoutManager(this);
         StaggeredGridLayoutManager stagger = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
@@ -136,6 +99,75 @@ public class material extends AppCompatActivity {
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(adapterDome);
+    }
+
+    public void MPAndroidChart(){
+        lineChart = mBinding.lineChart;
+        lineChartData = new LineChartData(lineChart,this);
+        for (int i = 0; i < MeasurementTimes; i++) {
+            xData.add("11" + "/" + i);
+            //yData.add(new Entry(i, list_sys));
+        }
+
+        lineChartData.initX(xData);
+        lineChartData.initY(90F,140F);
+        lineChartData.initDataSet(yData);
+    }
+
+    public void UpdateChart(){
+        mHandler = new Handler( myHandlerThread.getLooper() ){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                switch(msg.what){
+                    case 1:
+                        //抓取姓名
+                        mBinding.name.setText(Mysql.getData("Login", "CardID", UserCardID, "cname"));
+                        //抓取用戶資料
+                        UserData = Mysql.getDataArray("Field_GetUserData", UserCardID);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                recyclerView = findViewById(R.id.rv_data);
+                                //獲取map集合中的所有鍵的Set集合, keySet()
+                                Set<String> keySet = UserData.keySet();
+                                //有了set集合就可以獲取迭代器
+                                for (String key : keySet) {
+                                    MeasurementTimes++;
+                                    //有了鍵就可以通過map集合的get方法獲取其對應的値
+                                    String value = UserData.get(key);
+                                    list_date.add(key);
+                                    String[] detailed = value.split("\\s+");
+                                    list_sys.add(detailed[0]);
+                                    list_dia.add(detailed[1]);
+                                    list_hr.add(detailed[2]);
+                                    //list_res.add(detailed[3]);
+                                    if(detailed[3].equals("0")) {
+                                        MeasurementTimesDeviant++;
+                                        list_IV.add(getResources().getDrawable(R.drawable.no));
+                                    }
+                                    else
+                                        list_IV.add(getResources().getDrawable(R.drawable.ok));
+                                }
+                                mBinding.materialMeasurementNum.setText(String.valueOf(MeasurementTimes));
+                                mBinding.materialAbnormalNum.setText(String.valueOf(MeasurementTimesDeviant));
+                                RecycleView();
+                                MPAndroidChart();
+                            }
+                        });
+                        //initialAdapter(Mysql.getDataArray("Field_id", ""));
+                        break;
+                    case 2:
+                        //NameList = Mysql.getDataArray("GetData", field_ID);
+                        //mHandler.post(runnable);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        };
+
+        mHandler.sendEmptyMessage( 1 ) ;
     }
 
     /**隱藏狀態列和導航欄*/
@@ -154,34 +186,4 @@ public class material extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
     }
 
-    public void UpdateChart(){
-        mHandler = new Handler( myHandlerThread.getLooper() ){
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                switch(msg.what){
-                    case 1:
-                        //抓取姓名
-                        mBinding.name.setText(Mysql.getData("Login", "CardID", UserCardID, "cname"));
-                        UserData = Mysql.getDataArray("Field_GetUserData", UserCardID);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                RecycleView();
-                            }
-                        });
-                        //initialAdapter(Mysql.getDataArray("Field_id", ""));
-                        break;
-                    case 2:
-                        //NameList = Mysql.getDataArray("GetData", field_ID);
-                        //mHandler.post(runnable);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        };
-
-        mHandler.sendEmptyMessage( 1 ) ;
-    }
 }
