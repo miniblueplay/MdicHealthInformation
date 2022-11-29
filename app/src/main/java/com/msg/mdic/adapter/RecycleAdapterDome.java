@@ -22,6 +22,8 @@ public class RecycleAdapterDome extends RecyclerView.Adapter<RecycleAdapterDome.
     private List<String> list_sys;
     private List<String> list_dia;
     private List<String> list_hr;
+    private List<String> list_Hypertension;
+    private List<String> list_Medicine;
     private List<Drawable> list_IV;
     private View inflater;
 
@@ -42,12 +44,14 @@ public class RecycleAdapterDome extends RecyclerView.Adapter<RecycleAdapterDome.
     }
 
     //構造方法，傳入數據
-    public RecycleAdapterDome(Context context, List<String> list_date, List<String> list_sys, List<String> list_dia, List<String> list_hr, List<Drawable> list_IV){
+    public RecycleAdapterDome(Context context, List<String> list_date, List<String> list_sys, List<String> list_dia, List<String> list_hr, List<String>list_Hypertension, List<String> list_Medicine, List<Drawable> list_IV){
         this.context = context;
         this.list_date = list_date;
         this.list_sys = list_sys;
         this.list_dia = list_dia;
         this.list_hr = list_hr;
+        this.list_Hypertension = list_Hypertension;
+        this.list_Medicine = list_Medicine;
         this.list_IV = list_IV;
     }
 
@@ -62,24 +66,42 @@ public class RecycleAdapterDome extends RecyclerView.Adapter<RecycleAdapterDome.
 
     @Override
     public void onBindViewHolder(@NonNull RecycleAdapterDome.MyViewHolder holder, int position) {
+
+        int sys = Integer.parseInt(list_sys.get(position));
+        int dia = Integer.parseInt(list_dia.get(position));
+        int hr = Integer.parseInt(list_hr.get(position));
+
         //將數據和控件綁定
         holder.textView_date.setText(list_date.get(position));
         holder.textView_sys.setText(list_sys.get(position));
         holder.textView_dia.setText(list_dia.get(position));
         holder.textView_hr.setText(list_hr.get(position));
         holder.imageView_IV.setImageDrawable(list_IV.get(position));
-        if(Integer.parseInt(list_sys.get(position))  > 140)
-            holder.textView_sys.setTextColor(Color.RED);
-        else
-            holder.textView_sys.setTextColor(Color.argb(255,66,66,66));
-        if(Integer.parseInt(list_dia.get(position))  > 90)
-            holder.textView_dia.setTextColor(Color.RED);
-        else
-            holder.textView_dia.setTextColor(Color.argb(255,66,66,66));
-        if(Integer.parseInt(list_hr.get(position))  > 100)
-            holder.textView_hr.setTextColor(Color.RED);
-        else
-            holder.textView_hr.setTextColor(Color.argb(255,66,66,66));
+
+        holder.textView_sys.setTextColor(Color.argb(255,66,66,66));
+        holder.textView_dia.setTextColor(Color.argb(255,66,66,66));
+        holder.textView_hr.setTextColor(Color.argb(255,66,66,66));
+
+        //有無高血壓
+        if(list_Hypertension.get(position).equals("有")){
+            //有無藥物控制
+            if(list_Medicine.get(position).equals("有")){
+                //安全值 140/90 mmHg 100bpm
+                if(sys > 140)holder.textView_sys.setTextColor(Color.RED);
+                if(dia > 90)holder.textView_dia.setTextColor(Color.RED);
+                if(hr > 100)holder.textView_hr.setTextColor(Color.RED);
+            }else{
+                //安全值 180/110 mmHg 100bpm
+                if(sys > 180)holder.textView_sys.setTextColor(Color.RED);
+                if(dia > 110)holder.textView_dia.setTextColor(Color.RED);
+                if(hr > 100)holder.textView_hr.setTextColor(Color.RED);
+            }
+        }else{
+            //安全值 140/90 mmHg 100bpm
+            if(sys > 140)holder.textView_sys.setTextColor(Color.RED);
+            if(dia > 90)holder.textView_dia.setTextColor(Color.RED);
+            if(hr > 100)holder.textView_hr.setTextColor(Color.RED);
+        }
     }
 
     @Override

@@ -1,14 +1,13 @@
 package com.msg.mdic;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import java.text.ParseException;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,7 +16,6 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.widget.ListView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
@@ -26,16 +24,19 @@ import com.msg.mdic.databinding.ActivityMaterialBinding;
 import com.msg.mdic.tool.LineChartData;
 import com.msg.mdic.tool.MysqlCon;
 
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
 import java.util.Set;
 
 public class material extends AppCompatActivity {
 
     protected ActivityMaterialBinding mBinding;
+
+    private static final String TAG = "material";
 
     //宣告Handler
     HandlerThread myHandlerThread;
@@ -47,8 +48,6 @@ public class material extends AppCompatActivity {
     //折線圖
     LineChartData lineChartData;
     LineChart lineChart;
-    ArrayList<String> xData = new ArrayList<>();
-    ArrayList<Entry> yData = new ArrayList<>();
 
     //RecyclerList
     private RecyclerView recyclerView;
@@ -63,6 +62,8 @@ public class material extends AppCompatActivity {
     private final List<String> list_dia = new ArrayList<>();
     private final List<String> list_hr = new ArrayList<>();
     private final List<String> list_res = new ArrayList<>();
+    private final List<String> list_Hypertension = new ArrayList<>();
+    private final List<String> list_Medicine = new ArrayList<>();
     private final List<Drawable> list_IV = new ArrayList<>();
 
     @Override
@@ -88,9 +89,10 @@ public class material extends AppCompatActivity {
 
     }
 
+    /**數據列表**/
     public void RecycleView(){
         recyclerView = findViewById(R.id.rv_data);
-        adapterDome = new RecycleAdapterDome(this,list_date, list_sys, list_dia, list_hr, list_IV);
+        adapterDome = new RecycleAdapterDome(this,list_date, list_sys, list_dia, list_hr, list_Hypertension, list_Medicine, list_IV);
         //LinearLayoutManager manager = new LinearLayoutManager(this);
         StaggeredGridLayoutManager stagger = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(stagger);
@@ -101,19 +103,66 @@ public class material extends AppCompatActivity {
         recyclerView.setAdapter(adapterDome);
     }
 
-    public void MPAndroidChart(){
+    /**折線圖**/
+    public void MPAndroidChart()throws ParseException{
         lineChart = mBinding.lineChart;
+        lineChart.setDrawGridBackground(false);//後臺繪製
+        lineChart.setScaleYEnabled(false);//禁用Y軸縮放
+        lineChart.setScaleXEnabled(false);//禁用X軸縮放
+        //這個三個屬性是設置LineChar間距的
+        lineChart.setExtraBottomOffset(20f);
+        lineChart.setExtraRightOffset(5f);
+        lineChart.setExtraLeftOffset(5f);//間距
+        lineChart.setDoubleTapToZoomEnabled(false);//禁用雙擊放大
+
         lineChartData = new LineChartData(lineChart,this);
-        for (int i = 0; i < MeasurementTimes; i++) {
-            xData.add("11" + "/" + i);
-            //yData.add(new Entry(i, list_sys));
+        ArrayList<String> xData = new ArrayList<>();
+        ArrayList<Entry> yData_sys = new ArrayList<>();
+        ArrayList<Entry> yData_dia = new ArrayList<>();
+        ArrayList<Entry> yData_hr = new ArrayList<>();
+        ArrayList<Entry> yDataEnd_sys = new ArrayList<>();
+        ArrayList<Entry> yDataEnd_dia = new ArrayList<>();
+        ArrayList<Entry> yDataEnd_hr = new ArrayList<>();
+
+        xData.add(" ");
+        xData.add(" ");
+
+        if(MeasurementTimes != 0){
+            for (int i = MeasurementTimes-1; i >= 0; i--){
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                SimpleDateFormat sdf_ot = new SimpleDateFormat("MM/dd HH:mm");
+                Log.i(TAG + " sdf gatTime", list_date.get(i));
+                Date date = sdf.parse(list_date.get(i));
+                xData.add(sdf_ot.format(date));
+                Log.i(TAG + " sdf Time", sdf_ot.format(date));
+            }
+            for (int i = MeasurementTimes-1; i >= 0; i--){
+                yData_sys.add(new Entry(MeasurementTimes-i+1, Float.parseFloat(list_sys.get(i))));
+                yData_dia.add(new Entry(MeasurementTimes-i+1, Float.parseFloat(list_dia.get(i))));
+                yData_hr.add(new Entry(MeasurementTimes-i+1, Float.parseFloat(list_hr.get(i))));
+            }
+
+            yDataEnd_sys.add(new Entry(MeasurementTimes+1, Float.parseFloat(list_sys.get(0))));
+            yDataEnd_dia.add(new Entry(MeasurementTimes+1, Float.parseFloat(list_dia.get(0))));
+            yDataEnd_hr.add(new Entry(MeasurementTimes+1, Float.parseFloat(list_hr.get(0))));
         }
 
         lineChartData.initX(xData);
-        lineChartData.initY(90F,140F);
-        lineChartData.initDataSet(yData);
+        //有無高血壓
+        if(list_Hypertension.get(MeasurementTimes-1).equals("有")){
+            //有無藥物控制
+            if(list_Medicine.get(MeasurementTimes-1).equals("有")){
+                lineChartData.initY(40,180);
+            }else{
+                lineChartData.initY(40,220);
+            }
+        }else{
+            lineChartData.initY(40,180);
+        }
+        lineChartData.initDataSet(yData_sys, yData_dia, yData_hr, yDataEnd_sys, yDataEnd_dia, yDataEnd_hr, true);
     }
 
+    /**HandlerThread**/
     public void UpdateChart(){
         mHandler = new Handler( myHandlerThread.getLooper() ){
             @Override
@@ -142,6 +191,8 @@ public class material extends AppCompatActivity {
                                     list_dia.add(detailed[1]);
                                     list_hr.add(detailed[2]);
                                     //list_res.add(detailed[3]);
+                                    list_Hypertension.add(detailed[4]);
+                                    list_Medicine.add(detailed[5]);
                                     if(detailed[3].equals("0")) {
                                         MeasurementTimesDeviant++;
                                         list_IV.add(getResources().getDrawable(R.drawable.no));
@@ -149,13 +200,20 @@ public class material extends AppCompatActivity {
                                     else
                                         list_IV.add(getResources().getDrawable(R.drawable.ok));
                                 }
+
+                                //氣泡排序(日期)
+                                invertOrderList();
+
                                 mBinding.materialMeasurementNum.setText(String.valueOf(MeasurementTimes));
                                 mBinding.materialAbnormalNum.setText(String.valueOf(MeasurementTimesDeviant));
-                                RecycleView();
-                                MPAndroidChart();
+                                try {
+                                    RecycleView();
+                                    MPAndroidChart();
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         });
-                        //initialAdapter(Mysql.getDataArray("Field_id", ""));
                         break;
                     case 2:
                         //NameList = Mysql.getDataArray("GetData", field_ID);
@@ -170,7 +228,55 @@ public class material extends AppCompatActivity {
         mHandler.sendEmptyMessage( 1 ) ;
     }
 
-    /**隱藏狀態列和導航欄*/
+    /**資料進行氣泡排序**/
+    private void invertOrderList(){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date d1;
+        Date d2;
+        String temp_r;
+        Drawable iv;
+        //这是一个冒泡排序，将大的放在数组前面
+        for(int i=0; i<list_date.size()-1; i++){
+            for(int j=i+1; j<list_date.size();j++){
+                ParsePosition pos1 = new ParsePosition(0);
+                ParsePosition pos2 = new ParsePosition(0);
+                d1 = sdf.parse(list_date.get(i), pos1);
+                d2 = sdf.parse(list_date.get(j), pos2);
+                if(d1.before(d2)){//如果日期靠前，则换顺序
+                    //date
+                    temp_r = list_date.get(i);
+                    list_date.set(i, list_date.get(j));
+                    list_date.set(j, temp_r);
+                    //sys
+                    temp_r = list_sys.get(i);
+                    list_sys.set(i, list_sys.get(j));
+                    list_sys.set(j, temp_r);
+                    //dia
+                    temp_r = list_dia.get(i);
+                    list_dia.set(i, list_dia.get(j));
+                    list_dia.set(j, temp_r);
+                    //hr
+                    temp_r = list_hr.get(i);
+                    list_hr.set(i, list_hr.get(j));
+                    list_hr.set(j, temp_r);
+                    //Hypertension
+                    temp_r = list_Hypertension.get(i);
+                    list_Hypertension.set(i, list_Hypertension.get(j));
+                    list_Hypertension.set(j, temp_r);
+                    //Medicine
+                    temp_r = list_Medicine.get(i);
+                    list_Medicine.set(i, list_Medicine.get(j));
+                    list_Medicine.set(j, temp_r);
+                    //iv
+                    iv = list_IV.get(i);
+                    list_IV.set(i, list_IV.get(j));
+                    list_IV.set(j, iv);
+                }
+            }
+        }
+    }  
+
+    /**隱藏狀態列和導航欄**/
     public void hideNav() {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         //設定隱藏標題

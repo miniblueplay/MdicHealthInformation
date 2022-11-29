@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#cceeff"
+    android:background="#d1ede1"
     tools:context=".material">
 
     <ListView
@@ -20,7 +20,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#d28eff"
+            android:background="#7bc5ae"
             android:orientation="vertical">
 
             <TextView
@@ -126,14 +126,12 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#ffffff"
-            android:paddingTop="25dp"
-            android:paddingBottom="25dp">
+            android:background="#ffffff">
 
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/lineChart"
                 android:layout_width="match_parent"
-                android:layout_height="170dp"/>
+                android:layout_height="250dp"/>
         </LinearLayout>
 
         <LinearLayout

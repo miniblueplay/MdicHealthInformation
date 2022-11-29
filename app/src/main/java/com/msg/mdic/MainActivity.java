@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             Intent intent = new Intent();
-            intent.setClass(MainActivity.this, login.class);
+            intent.setClass(MainActivity.this, field.class); //之後改登入畫面
             startActivity(intent);
             overridePendingTransition(R.anim.anim_activity_open, 0);
             finish();
