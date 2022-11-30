@@ -1,13 +1,17 @@
 package com.msg.mdic;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import java.text.ParseException;
+
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -105,6 +109,7 @@ public class material extends AppCompatActivity {
 
     /**折線圖**/
     public void MPAndroidChart()throws ParseException{
+        int hi, mx;
         lineChart = mBinding.lineChart;
         lineChart.setDrawGridBackground(false);//後臺繪製
         lineChart.setScaleYEnabled(false);//禁用Y軸縮放
@@ -116,6 +121,31 @@ public class material extends AppCompatActivity {
         lineChart.setDoubleTapToZoomEnabled(false);//禁用雙擊放大
 
         lineChartData = new LineChartData(lineChart,this);
+
+        //有無高血壓
+        if(list_Hypertension.get(MeasurementTimes-1).equals("有")){
+            //有無藥物控制
+            if(list_Medicine.get(MeasurementTimes-1).equals("有")){
+                hi = 160;
+                mx = 60;
+                lineChartData.LimitLine(Color.YELLOW, 140, "SYS");
+                lineChartData.LimitLine(Color.GREEN, 90, "DIA");
+                lineChartData.LimitLine(Color.RED, 100, "HR");
+            }else{
+                hi = 200;
+                mx = 60;
+                lineChartData.LimitLine(Color.YELLOW, 180, "SYS");
+                lineChartData.LimitLine(Color.GREEN, 110, "DIA");
+                lineChartData.LimitLine(Color.RED, 100, "HR");
+            }
+        }else{
+            hi = 160;
+            mx = 60;
+            lineChartData.LimitLine(Color.YELLOW, 140, "SYS");
+            lineChartData.LimitLine(Color.GREEN, 90, "DIA");
+            lineChartData.LimitLine(Color.RED, 100, "HR");
+        }
+
         ArrayList<String> xData = new ArrayList<>();
         ArrayList<Entry> yData_sys = new ArrayList<>();
         ArrayList<Entry> yData_dia = new ArrayList<>();
@@ -131,15 +161,40 @@ public class material extends AppCompatActivity {
             for (int i = MeasurementTimes-1; i >= 0; i--){
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 SimpleDateFormat sdf_ot = new SimpleDateFormat("MM/dd HH:mm");
-                Log.i(TAG + " sdf gatTime", list_date.get(i));
+                //Log.i(TAG + " sdf gatTime", list_date.get(i));
                 Date date = sdf.parse(list_date.get(i));
                 xData.add(sdf_ot.format(date));
-                Log.i(TAG + " sdf Time", sdf_ot.format(date));
+                //Log.i(TAG + " sdf Time", sdf_ot.format(date));
             }
             for (int i = MeasurementTimes-1; i >= 0; i--){
                 yData_sys.add(new Entry(MeasurementTimes-i+1, Float.parseFloat(list_sys.get(i))));
                 yData_dia.add(new Entry(MeasurementTimes-i+1, Float.parseFloat(list_dia.get(i))));
                 yData_hr.add(new Entry(MeasurementTimes-i+1, Float.parseFloat(list_hr.get(i))));
+                //高血壓上限值設定
+                if(list_Hypertension.get(MeasurementTimes-1).equals("有")){
+                    if(list_Medicine.get(MeasurementTimes-1).equals("有")){
+                        if(Integer.parseInt(list_sys.get(i)) > hi) hi = Integer.parseInt(list_sys.get(i)) + 10;
+                        if(Integer.parseInt(list_dia.get(i)) > hi) hi = Integer.parseInt(list_dia.get(i)) + 10;
+                        if(Integer.parseInt(list_hr.get(i)) > hi) hi = Integer.parseInt(list_hr.get(i)) + 10;
+                        if(Integer.parseInt(list_sys.get(i)) < mx) mx = Integer.parseInt(list_sys.get(i)) - 10;
+                        if(Integer.parseInt(list_dia.get(i)) < mx) mx = Integer.parseInt(list_dia.get(i)) - 10;
+                        if(Integer.parseInt(list_hr.get(i)) < mx) mx = Integer.parseInt(list_hr.get(i)) - 10;
+                    }else{
+                        if(Integer.parseInt(list_sys.get(i)) > hi) hi = Integer.parseInt(list_sys.get(i)) + 10;
+                        if(Integer.parseInt(list_dia.get(i)) > hi) hi = Integer.parseInt(list_dia.get(i)) + 10;
+                        if(Integer.parseInt(list_hr.get(i)) > hi) hi = Integer.parseInt(list_hr.get(i)) + 10;
+                        if(Integer.parseInt(list_sys.get(i)) < mx) mx = Integer.parseInt(list_sys.get(i)) - 10;
+                        if(Integer.parseInt(list_dia.get(i)) < mx) mx = Integer.parseInt(list_dia.get(i)) - 10;
+                        if(Integer.parseInt(list_hr.get(i)) < mx) mx = Integer.parseInt(list_hr.get(i)) - 10;
+                    }
+                }else{
+                    if(Integer.parseInt(list_sys.get(i)) > hi) hi = Integer.parseInt(list_sys.get(i)) + 10;
+                    if(Integer.parseInt(list_dia.get(i)) > hi) hi = Integer.parseInt(list_dia.get(i)) + 10;
+                    if(Integer.parseInt(list_hr.get(i)) > hi) hi = Integer.parseInt(list_hr.get(i)) + 10;
+                    if(Integer.parseInt(list_sys.get(i)) < mx) mx = Integer.parseInt(list_sys.get(i)) - 10;
+                    if(Integer.parseInt(list_dia.get(i)) < mx) mx = Integer.parseInt(list_dia.get(i)) - 10;
+                    if(Integer.parseInt(list_hr.get(i)) < mx) mx = Integer.parseInt(list_hr.get(i)) - 10;
+                }
             }
 
             yDataEnd_sys.add(new Entry(MeasurementTimes+1, Float.parseFloat(list_sys.get(0))));
@@ -148,17 +203,7 @@ public class material extends AppCompatActivity {
         }
 
         lineChartData.initX(xData);
-        //有無高血壓
-        if(list_Hypertension.get(MeasurementTimes-1).equals("有")){
-            //有無藥物控制
-            if(list_Medicine.get(MeasurementTimes-1).equals("有")){
-                lineChartData.initY(40,180);
-            }else{
-                lineChartData.initY(40,220);
-            }
-        }else{
-            lineChartData.initY(40,180);
-        }
+        lineChartData.initY(mx, hi);
         lineChartData.initDataSet(yData_sys, yData_dia, yData_hr, yDataEnd_sys, yDataEnd_dia, yDataEnd_hr, true);
     }
 

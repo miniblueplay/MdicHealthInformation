@@ -126,12 +126,37 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#ffffff">
+            android:background="#444444"
+            android:orientation="vertical">
 
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/lineChart"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"/>
+                android:layout_height="280dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="15dp"
+                android:paddingBottom="5dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:text="SYS"
+                    android:textColor="@color/yellow"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:text="DIA"
+                    android:textColor="@color/green"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:text="HR"
+                    android:textColor="@color/red"/>
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout

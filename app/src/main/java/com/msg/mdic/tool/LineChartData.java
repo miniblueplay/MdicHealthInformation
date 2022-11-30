@@ -2,7 +2,9 @@ package com.msg.mdic.tool;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.icu.text.DecimalFormat;
+import android.os.Handler;
 
 import androidx.core.content.ContextCompat;
 
@@ -10,13 +12,16 @@ import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.MPPointF;
 import com.msg.mdic.R;
 
 import java.util.ArrayList;
@@ -25,10 +30,38 @@ import java.util.List;
 public class LineChartData {
     Context context;
     LineChart lineChart;
+    private Handler mHandler = new Handler();
 
     public LineChartData(LineChart lineChart, Context context){
         this.context = context;
         this.lineChart = lineChart;
+        YAxis leftAxis = lineChart.getAxisLeft();
+        leftAxis.removeAllLimitLines(); // reset all limit lines to avoid overlapping lines
+    }
+
+    /**轴线的绘制 */
+    private void drawAxis(AxisBase mAxis){
+        //设置是否启用轴线：如果关闭那么就默认没有轴线/标签/网格线
+        mAxis.setEnabled(true);
+        //设置是否开启绘制轴的标签
+        mAxis.setDrawLabels(true);
+        //是否绘制轴线
+        mAxis.setDrawAxisLine(true);
+        //是否绘制网格线
+        //mAxis.setDrawGridLines(true);
+    }
+
+    /**限制線*/
+    public void LimitLine(int color, int high, String name){
+        LimitLine ll1 = new LimitLine(high, name + " " + high);
+        ll1.setLineWidth(2f);//線寬
+        ll1.enableDashedLine(10f, 10f, 0f);//虛線
+        ll1.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);//位置
+        ll1.setTextSize(10f);
+        ll1.setTextColor(color);
+        ll1.setLineColor(color);
+        YAxis leftAxis = lineChart.getAxisLeft();
+        leftAxis.addLimitLine(ll1);
     }
 
     public void initDataSet(ArrayList<Entry> values_sys, ArrayList<Entry> values_dia, ArrayList<Entry> values_hr, ArrayList<Entry> valuesend_sys, ArrayList<Entry> valuesend_dia, ArrayList<Entry> valuesend_hr, boolean show_hr) {
@@ -116,6 +149,20 @@ public class LineChartData {
             lineChart.setNoDataTextColor(Color.RED);//文字顏色
         }
         lineChart.invalidate();//繪製圖表
+
+        //通过选中监听,来实现不点击图表后1秒,定位线自动消失
+        lineChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                mHandler.removeCallbacks(hideHighLight);
+                mHandler.postDelayed(hideHighLight,1000);
+            }
+
+            @Override
+            public void onNothingSelected() {
+
+            }
+        });
     }
 
     public void initX(ArrayList dateList) {
@@ -182,6 +229,13 @@ public class LineChartData {
         rightAxis.setAxisMaximum(max);//Y軸標籤最大值
         rightAxis.setValueFormatter(new MyYAxisValueFormatter());
     }
+
+    Runnable hideHighLight = new Runnable() {
+        @Override
+        public void run() {
+            lineChart.highlightValue(null);
+        }
+    };
 
     class MyYAxisValueFormatter implements IAxisValueFormatter {
 
