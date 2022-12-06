@@ -2,6 +2,7 @@ package com.msg.mdic.tool;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Typeface;
 import android.icu.text.DecimalFormat;
 import android.os.Handler;
@@ -35,20 +36,15 @@ public class LineChartData {
     public LineChartData(LineChart lineChart, Context context){
         this.context = context;
         this.lineChart = lineChart;
+        lineChart.clear();
         YAxis leftAxis = lineChart.getAxisLeft();
         leftAxis.removeAllLimitLines(); // reset all limit lines to avoid overlapping lines
-    }
-
-    /**轴线的绘制 */
-    private void drawAxis(AxisBase mAxis){
-        //设置是否启用轴线：如果关闭那么就默认没有轴线/标签/网格线
-        mAxis.setEnabled(true);
-        //设置是否开启绘制轴的标签
-        mAxis.setDrawLabels(true);
-        //是否绘制轴线
-        mAxis.setDrawAxisLine(true);
-        //是否绘制网格线
-        //mAxis.setDrawGridLines(true);
+        Matrix matrix = new Matrix();
+        //1f代表不缩放
+        matrix.postScale(3f, 1f);
+        lineChart.getViewPortHandler().refresh(matrix, lineChart, false);
+        //重设所有缩放和拖动，使图表完全适合它的边界（完全缩小）。
+        lineChart.fitScreen();
     }
 
     /**限制線*/
@@ -77,6 +73,9 @@ public class LineChartData {
             set_sys.setColor(ContextCompat.getColor(context, R.color.yellow));//線的顏色
             set_sys.setLineWidth(2f);//線寬
             //set_sys.setDrawCircles(false); //不顯示相應座標點的小圓圈(預設顯示)
+            set_sys.setCircleColor(ContextCompat.getColor(context, R.color.yellow));//圓點顏色
+            set_sys.setCircleRadius(4);//圓點大小
+            set_sys.setDrawCircleHole(false);//圓點false實心,true空心
             set_sys.setValueTextSize(textSize);//座標點數字大小
             set_sys.setValueTextColor(ContextCompat.getColor(context, R.color.yellow));//字的顏色
             set_sys.setDrawValues(true);//顯示座標點對應Y軸的數字(預設顯示)
@@ -95,6 +94,9 @@ public class LineChartData {
             set_dia.setColor(ContextCompat.getColor(context, R.color.green));//線的顏色
             set_dia.setLineWidth(2f);//線寬
             //set_dia.setDrawCircles(false); //不顯示相應座標點的小圓圈(預設顯示)
+            set_dia.setCircleColor(ContextCompat.getColor(context, R.color.green));//圓點顏色
+            set_dia.setCircleRadius(4);//圓點大小
+            set_dia.setDrawCircleHole(false);//圓點false實心,true空心
             set_dia.setValueTextSize(textSize);//座標點數字大小
             set_dia.setValueTextColor(ContextCompat.getColor(context, R.color.green));//字的顏色
             set_dia.setDrawValues(true);//顯示座標點對應Y軸的數字(預設顯示)
@@ -106,20 +108,23 @@ public class LineChartData {
             setend_dia.setDrawCircleHole(true);//圓點false實心,true空心
             setend_dia.setDrawValues(false);//不顯示座標點對應Y軸的數字(預設顯示)
 
-            //hr red
+            //hr org
             set_hr = new LineDataSet(values_hr, "");
             set_hr.setMode(LineDataSet.Mode.LINEAR); //類型為折線
             set_hr.setHighlightEnabled(true);//禁用點擊交點後顯示高亮線 (預設顯示)
-            set_hr.setColor(ContextCompat.getColor(context, R.color.red));//線的顏色
+            set_hr.setColor(ContextCompat.getColor(context, R.color.orange));//線的顏色
             set_hr.setLineWidth(2f);//線寬
             //set_hr.setDrawCircles(false); //不顯示相應座標點的小圓圈(預設顯示)
+            set_hr.setCircleColor(ContextCompat.getColor(context, R.color.orange));//圓點顏色
+            set_hr.setCircleRadius(4);//圓點大小
+            set_hr.setDrawCircleHole(false);//圓點false實心,true空心
             set_hr.setValueTextSize(textSize);//座標點數字大小
-            set_hr.setValueTextColor(ContextCompat.getColor(context, R.color.red));//字的顏色
+            set_hr.setValueTextColor(ContextCompat.getColor(context, R.color.orange));//字的顏色
             set_hr.setDrawValues(true);//顯示座標點對應Y軸的數字(預設顯示)
-            //hr red 最後的圓點
+            //hr org 最後的圓點
             setend_hr = new LineDataSet(valuesend_hr, "");
-            setend_hr.setCircleColor(ContextCompat.getColor(context, R.color.red));//圓點顏色
-            setend_hr.setColor(ContextCompat.getColor(context, R.color.red));//線的顏色
+            setend_hr.setCircleColor(ContextCompat.getColor(context, R.color.orange));//圓點顏色
+            setend_hr.setColor(ContextCompat.getColor(context, R.color.orange));//線的顏色
             setend_hr.setCircleRadius(4);//圓點大小
             setend_hr.setDrawCircleHole(true);//圓點false實心,true空心
             setend_hr.setDrawValues(false);//不顯示座標點對應Y軸的數字(預設顯示)
@@ -169,7 +174,7 @@ public class LineChartData {
         XAxis xAxis = lineChart.getXAxis();
 
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);//X軸標籤顯示位置(預設顯示在上方，分為上方內/外側、下方內/外側及上下同時顯示)
-        xAxis.setTextColor(Color.GRAY);//X軸標籤顏色
+        xAxis.setTextColor(Color.WHITE);//X軸標籤顏色
         xAxis.setTextSize(10);//X軸標籤大小
 
         xAxis.setLabelCount(dateList.size());//X軸標籤個數
@@ -183,7 +188,7 @@ public class LineChartData {
         //設置一頁最大顯示個數爲6，超出部分就滑動
         float ratio = (float) dateList.size() / (float) 5;
         //顯示的時候是按照多大的比率縮放顯示,1f表示不放大縮小
-        lineChart.zoom(ratio, 0f, 0, 0);
+        lineChart.zoom(ratio, 1f, 0, 0);
         if (dateList.size()>0){
             xAxis.setValueFormatter(new StringAxisValueFormatter(dateList));
         }
@@ -216,14 +221,14 @@ public class LineChartData {
 
         //左側的軸線
         leftAxis.setLabelCount(5);//Y軸標籤個數
-        leftAxis.setTextColor(Color.GRAY);//Y軸標籤顏色
+        leftAxis.setTextColor(Color.WHITE);//Y軸標籤顏色
         leftAxis.setTextSize(12);//Y軸標籤大小
         leftAxis.setAxisMinimum(min);//Y軸標籤最小值
         leftAxis.setAxisMaximum(max);//Y軸標籤最大值
         leftAxis.setValueFormatter(new MyYAxisValueFormatter());
         //右側的軸線
         rightAxis.setLabelCount(5);//Y軸標籤個數
-        rightAxis.setTextColor(Color.GRAY);//Y軸標籤顏色
+        rightAxis.setTextColor(Color.WHITE);//Y軸標籤顏色
         rightAxis.setTextSize(12);//Y軸標籤大小
         rightAxis.setAxisMinimum(min);//Y軸標籤最小值
         rightAxis.setAxisMaximum(max);//Y軸標籤最大值

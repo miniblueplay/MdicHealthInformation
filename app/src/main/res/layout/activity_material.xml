@@ -32,96 +32,131 @@
                 android:textSize="30sp"/>
         </LinearLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="15dp">
-
+            android:layout_height="wrap_content">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
-
-                <TextView
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="性名："
-                    android:textColor="#444444"
-                    android:textSize="25sp"/>
+                    android:orientation="vertical"
+                    android:padding="15dp">
 
-                <TextView
-                    android:id="@+id/name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="5dp"
-                    android:text="null"
-                    android:textSize="25sp"
-                    android:textColor="#444444"
-                    tools:text="null" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="性名："
+                            android:textColor="#444444"
+                            android:textSize="25sp"/>
+
+                        <TextView
+                            android:id="@+id/name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:text="null"
+                            android:textSize="25sp"
+                            android:textColor="#444444"
+                            tools:text="null" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="測量次數："
+                            android:textColor="#444444"
+                            android:textSize="25sp"/>
+
+                        <TextView
+                            android:id="@+id/material_measurement_num"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:text="nu"
+                            android:textSize="25sp"
+                            android:textColor="#444444"
+                            tools:text="0" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="次"
+                            android:textSize="25sp"
+                            android:textColor="#444444"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="異常次數："
+                            android:textSize="25sp"
+                            android:textColor="#444444"/>
+                        <TextView
+                            android:id="@+id/material_abnormal_num"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:text="nu"
+                            android:textSize="25sp"
+                            android:textColor="#ff0000"
+                            tools:text="0"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="次"
+                            android:textSize="25sp"
+                            android:textColor="#444444"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+                <RelativeLayout
+                    android:layout_width="155dp"
+                    android:layout_height="match_parent"
+                    android:paddingRight="20dp"
+                    android:paddingLeft="20dp">
+                    <Button
+                        android:id="@+id/button_hr_show"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:backgroundTint="@color/ash"
+                        android:text="Show 心律"
+                        android:textColor="#ffffff" />
+
+                    <Button
+                        android:id="@+id/button_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_below="@+id/button_hr_show"
+                        android:layout_alignParentRight="true"
+                        android:backgroundTint="@color/white"
+                        android:text="顯示 時"
+                        android:textColor="#666666"
+                        android:textSize="21sp" />
+                </RelativeLayout>
             </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="累計測量次數："
-                    android:textColor="#444444"
-                    android:textSize="25sp"/>
-
-                <TextView
-                    android:id="@+id/material_measurement_num"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="5dp"
-                    android:text="null"
-                    android:textSize="25sp"
-                    android:textColor="#444444"
-                    tools:text="0" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="次"
-                    android:textSize="25sp"
-                    android:textColor="#444444"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="數值異常次數："
-                    android:textSize="25sp"
-                    android:textColor="#444444"/>
-                <TextView
-                    android:id="@+id/material_abnormal_num"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="5dp"
-                    android:text="null"
-                    android:textSize="25sp"
-                    android:textColor="#ff0000"
-                    tools:text="0"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="次"
-                    android:textSize="25sp"
-                    android:textColor="#444444"/>
-            </LinearLayout>
-
-        </LinearLayout>
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -132,31 +167,7 @@
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/lineChart"
                 android:layout_width="match_parent"
-                android:layout_height="280dp"/>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="15dp"
-                android:paddingBottom="5dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
-                    android:text="SYS"
-                    android:textColor="@color/yellow"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
-                    android:text="DIA"
-                    android:textColor="@color/green"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
-                    android:text="HR"
-                    android:textColor="@color/red"/>
-            </LinearLayout>
+                android:layout_height="300dp"/>
         </LinearLayout>
 
         <LinearLayout

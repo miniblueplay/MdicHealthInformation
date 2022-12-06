@@ -70,6 +70,9 @@ public class material extends AppCompatActivity {
     private final List<String> list_Medicine = new ArrayList<>();
     private final List<Drawable> list_IV = new ArrayList<>();
 
+    //設定
+    private boolean showHR = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +93,15 @@ public class material extends AppCompatActivity {
         Mysql = new MysqlCon();
 
         UpdateChart();
+
+        mBinding.buttonHrShow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if ( showHR ) showHR = false;
+                else showHR = true;
+                mHandler.sendEmptyMessage( 2 ) ;
+            }
+        });
 
     }
 
@@ -128,22 +140,22 @@ public class material extends AppCompatActivity {
             if(list_Medicine.get(MeasurementTimes-1).equals("有")){
                 hi = 160;
                 mx = 60;
-                lineChartData.LimitLine(Color.YELLOW, 140, "SYS");
-                lineChartData.LimitLine(Color.GREEN, 90, "DIA");
-                lineChartData.LimitLine(Color.RED, 100, "HR");
+                lineChartData.LimitLine(Color.YELLOW, 140, "SBP");
+                lineChartData.LimitLine(Color.GREEN, 90, "DBP");
+                if ( showHR ) lineChartData.LimitLine(Color.argb(255,255,136,0) , 100, "HR");
             }else{
                 hi = 200;
                 mx = 60;
-                lineChartData.LimitLine(Color.YELLOW, 180, "SYS");
-                lineChartData.LimitLine(Color.GREEN, 110, "DIA");
-                lineChartData.LimitLine(Color.RED, 100, "HR");
+                lineChartData.LimitLine(Color.YELLOW, 180, "SBP");
+                lineChartData.LimitLine(Color.GREEN, 110, "DBP");
+                if ( showHR ) lineChartData.LimitLine(Color.argb(255,255,136,0), 100, "HR");
             }
         }else{
             hi = 160;
             mx = 60;
-            lineChartData.LimitLine(Color.YELLOW, 140, "SYS");
-            lineChartData.LimitLine(Color.GREEN, 90, "DIA");
-            lineChartData.LimitLine(Color.RED, 100, "HR");
+            lineChartData.LimitLine(Color.YELLOW, 140, "SBP");
+            lineChartData.LimitLine(Color.GREEN, 90, "DBP");
+            if ( showHR ) lineChartData.LimitLine(Color.argb(255,255,136,0), 100, "HR");
         }
 
         ArrayList<String> xData = new ArrayList<>();
@@ -167,9 +179,9 @@ public class material extends AppCompatActivity {
                 //Log.i(TAG + " sdf Time", sdf_ot.format(date));
             }
             for (int i = MeasurementTimes-1; i >= 0; i--){
-                yData_sys.add(new Entry(MeasurementTimes-i+1, Float.parseFloat(list_sys.get(i))));
-                yData_dia.add(new Entry(MeasurementTimes-i+1, Float.parseFloat(list_dia.get(i))));
-                yData_hr.add(new Entry(MeasurementTimes-i+1, Float.parseFloat(list_hr.get(i))));
+                yData_sys.add(new Entry(MeasurementTimes-i+1, Integer.parseInt(list_sys.get(i))));
+                yData_dia.add(new Entry(MeasurementTimes-i+1, Integer.parseInt(list_dia.get(i))));
+                yData_hr.add(new Entry(MeasurementTimes-i+1, Integer.parseInt(list_hr.get(i))));
                 //高血壓上限值設定
                 if(list_Hypertension.get(MeasurementTimes-1).equals("有")){
                     if(list_Medicine.get(MeasurementTimes-1).equals("有")){
@@ -197,14 +209,14 @@ public class material extends AppCompatActivity {
                 }
             }
 
-            yDataEnd_sys.add(new Entry(MeasurementTimes+1, Float.parseFloat(list_sys.get(0))));
-            yDataEnd_dia.add(new Entry(MeasurementTimes+1, Float.parseFloat(list_dia.get(0))));
-            yDataEnd_hr.add(new Entry(MeasurementTimes+1, Float.parseFloat(list_hr.get(0))));
+            yDataEnd_sys.add(new Entry(MeasurementTimes+1, Integer.parseInt(list_sys.get(0))));
+            yDataEnd_dia.add(new Entry(MeasurementTimes+1, Integer.parseInt(list_dia.get(0))));
+            yDataEnd_hr.add(new Entry(MeasurementTimes+1, Integer.parseInt(list_hr.get(0))));
         }
 
         lineChartData.initX(xData);
         lineChartData.initY(mx, hi);
-        lineChartData.initDataSet(yData_sys, yData_dia, yData_hr, yDataEnd_sys, yDataEnd_dia, yDataEnd_hr, true);
+        lineChartData.initDataSet(yData_sys, yData_dia, yData_hr, yDataEnd_sys, yDataEnd_dia, yDataEnd_hr, showHR);
     }
 
     /**HandlerThread**/
@@ -215,54 +227,71 @@ public class material extends AppCompatActivity {
                 super.handleMessage(msg);
                 switch(msg.what){
                     case 1:
-                        //抓取姓名
-                        mBinding.name.setText(Mysql.getData("Login", "CardID", UserCardID, "cname"));
-                        //抓取用戶資料
-                        UserData = Mysql.getDataArray("Field_GetUserData", UserCardID);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                recyclerView = findViewById(R.id.rv_data);
-                                //獲取map集合中的所有鍵的Set集合, keySet()
-                                Set<String> keySet = UserData.keySet();
-                                //有了set集合就可以獲取迭代器
-                                for (String key : keySet) {
-                                    MeasurementTimes++;
-                                    //有了鍵就可以通過map集合的get方法獲取其對應的値
-                                    String value = UserData.get(key);
-                                    list_date.add(key);
-                                    String[] detailed = value.split("\\s+");
-                                    list_sys.add(detailed[0]);
-                                    list_dia.add(detailed[1]);
-                                    list_hr.add(detailed[2]);
-                                    //list_res.add(detailed[3]);
-                                    list_Hypertension.add(detailed[4]);
-                                    list_Medicine.add(detailed[5]);
-                                    if(detailed[3].equals("0")) {
-                                        MeasurementTimesDeviant++;
-                                        list_IV.add(getResources().getDrawable(R.drawable.no));
-                                    }
-                                    else
-                                        list_IV.add(getResources().getDrawable(R.drawable.ok));
-                                }
+                        try {
+                            //抓取姓名
+                            mBinding.name.setText(Mysql.getData("Login", "CardID", UserCardID, "cname"));
+                            //抓取用戶資料
+                            UserData = Mysql.getDataArray("Field_GetUserData", UserCardID);
+                        }catch (Exception e){
+                            Log.d(TAG, "Mysql Delay...");
+                        }
+                        try {
+                            mHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            recyclerView = findViewById(R.id.rv_data);
+                                            //獲取map集合中的所有鍵的Set集合, keySet()
+                                            Set<String> keySet = UserData.keySet();
+                                            //有了set集合就可以獲取迭代器
+                                            for (String key : keySet) {
+                                                MeasurementTimes++;
+                                                //有了鍵就可以通過map集合的get方法獲取其對應的値
+                                                String value = UserData.get(key);
+                                                list_date.add(key);
+                                                String[] detailed = value.split("\\s+");
+                                                list_sys.add(detailed[0]);
+                                                list_dia.add(detailed[1]);
+                                                list_hr.add(detailed[2]);
+                                                //list_res.add(detailed[3]);
+                                                list_Hypertension.add(detailed[4]);
+                                                list_Medicine.add(detailed[5]);
+                                                if(detailed[3].equals("0")) {
+                                                    MeasurementTimesDeviant++;
+                                                    list_IV.add(getResources().getDrawable(R.drawable.no));
+                                                }
+                                                else
+                                                    list_IV.add(getResources().getDrawable(R.drawable.ok));
+                                            }
 
-                                //氣泡排序(日期)
-                                invertOrderList();
+                                            //氣泡排序(日期)
+                                            invertOrderList();
 
-                                mBinding.materialMeasurementNum.setText(String.valueOf(MeasurementTimes));
-                                mBinding.materialAbnormalNum.setText(String.valueOf(MeasurementTimesDeviant));
-                                try {
-                                    RecycleView();
-                                    MPAndroidChart();
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
+                                            mBinding.materialMeasurementNum.setText(String.valueOf(MeasurementTimes));
+                                            mBinding.materialAbnormalNum.setText(String.valueOf(MeasurementTimesDeviant));
+                                            try {
+                                                RecycleView();
+                                                MPAndroidChart();
+                                            } catch (ParseException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
                                 }
-                            }
-                        });
+                                //延遲時間(ms)
+                            }, 1000);
+                        }catch (Exception e){
+                            Log.d(TAG, "Layout Error...");
+                        }
                         break;
                     case 2:
-                        //NameList = Mysql.getDataArray("GetData", field_ID);
-                        //mHandler.post(runnable);
+                        try {
+                            MPAndroidChart();
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
                         break;
                     default:
                         break;
