@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -59,19 +60,32 @@ public class material extends AppCompatActivity {
 
     //用戶
     private String UserCardID;
+    private String Name;
     private Map<String,String> UserData;
     int MeasurementTimes = 0, MeasurementTimesDeviant = 0;
     private final List<String> list_date = new ArrayList<>();
     private final List<String> list_sys = new ArrayList<>();
     private final List<String> list_dia = new ArrayList<>();
     private final List<String> list_hr = new ArrayList<>();
-    private final List<String> list_res = new ArrayList<>();
+    //private final List<String> list_res = new ArrayList<>();
     private final List<String> list_Hypertension = new ArrayList<>();
     private final List<String> list_Medicine = new ArrayList<>();
     private final List<Drawable> list_IV = new ArrayList<>();
 
+    //依時間顯示用列表數據
+    private final List<String> list_date_new = new ArrayList<>();
+    private final List<String> list_sys_new = new ArrayList<>();
+    private final List<String> list_dia_new = new ArrayList<>();
+    private final List<String> list_hr_new = new ArrayList<>();
+    //private final List<String> list_res_new = new ArrayList<>();
+    private final List<String> list_Hypertension_new = new ArrayList<>();
+    private final List<String> list_Medicine_new = new ArrayList<>();
+    private final List<Drawable> list_IV_new = new ArrayList<>();
+
+
     //設定
     private boolean showHR = true;
+    private final List<String> setTimeShow = new  ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,33 +108,116 @@ public class material extends AppCompatActivity {
 
         UpdateChart();
 
+        //心律折線圖顯示(隱藏)
         mBinding.buttonHrShow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if ( showHR ) showHR = false;
-                else showHR = true;
+                if ( showHR ){
+                    showHR = false;
+                    mBinding.textHr.setVisibility(View.INVISIBLE);
+                }
+                else{
+                    showHR = true;
+                    mBinding.textHr.setVisibility(View.VISIBLE);
+                }
                 mHandler.sendEmptyMessage( 2 ) ;
+            }
+        });
+
+        //顯示月,日,時數據
+        setTimeShow.add(0, "1");
+        setTimeShow.add(1, "時");
+        setTimeShow.add(2, "日");
+        setTimeShow.add(3, "月");
+        
+        mBinding.buttonDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (Integer.parseInt(setTimeShow.get(0)) == setTimeShow.size()-1 )setTimeShow.set(0, "0");
+                setTimeShow.set(0, String.valueOf(Integer.parseInt(setTimeShow.get(0))+1));
+                mBinding.buttonDate.setText(setTimeShow.get(Integer.parseInt(setTimeShow.get(0))));
+                switch (setTimeShow.get(0)){
+                    case "1": //時
+                        for (int i = 0; i < MeasurementTimes; i++) {
+                            list_date_new.add(list_date.get(i));
+                            list_sys_new.add(list_sys.get(i));
+                            list_dia_new.add(list_dia.get(i));
+                            list_hr_new.add(list_hr.get(i));
+                            list_Hypertension_new.add(list_Hypertension.get(i));
+                            list_Medicine_new.add(list_Medicine.get(i));
+                            list_IV_new.add(list_IV.get(i));
+                        }
+                        break;
+                    case "2": //日
+                        for (int i = 0; i < MeasurementTimes; i++) {
+
+                        }
+                        break;
+                    case "3": //月
+                        for (int i = 0; i < MeasurementTimes; i++) {
+
+                        }
+                        break;
+                    default:break;
+                }
+                mHandler.sendEmptyMessage( 3 ) ;
             }
         });
 
     }
 
     /**數據列表**/
-    public void RecycleView(){
-        recyclerView = findViewById(R.id.rv_data);
-        adapterDome = new RecycleAdapterDome(this,list_date, list_sys, list_dia, list_hr, list_Hypertension, list_Medicine, list_IV);
-        //LinearLayoutManager manager = new LinearLayoutManager(this);
+    public void RecycleView(List<String> date, List<String> sys, List<String> dia, List<String> hr, List<String> hypertension, List<String> medicine, List<Drawable> iv) throws ParseException {
+        recyclerView = mBinding.rvData;
+        ArrayList<String> oldDate = new ArrayList<>();
+        if(MeasurementTimes != 0) {
+            switch (setTimeShow.get(0)) {
+                case "1":
+                    for (int i = MeasurementTimes - 1; i >= 0; i--) {
+                        oldDate.add(DateToNewDate(date.get(i), "yyyy-MM-dd HH:mm:ss", "MM/dd HH:mm:ss"));
+                    }
+                    break;
+                case "2":
+                    for (int i = MeasurementTimes - 1; i >= 0; i--)
+                        oldDate.add(DateToNewDate(date.get(i), "yyyy-MM-dd HH:mm:ss", "MM/dd"));
+                    break;
+                case "3":
+                    for (int i = MeasurementTimes - 1; i >= 0; i--)
+                        oldDate.add(DateToNewDate(date.get(i), "yyyy-MM-dd HH:mm:ss", "MM月"));
+                    break;
+                default:
+                    for (int i = MeasurementTimes - 1; i >= 0; i--)
+                        oldDate.add(DateToNewDate(date.get(i), "yyyy-MM-dd HH:mm:ss", "MM/dd HH:mm:ss"));
+                    break;
+            }
+        }
+        ArrayList<String> newDate = new ArrayList<>();
+        ArrayList<String> newSys = new ArrayList<>();
+        ArrayList<String> newDia = new ArrayList<>();
+        ArrayList<String> newHr = new ArrayList<>();
+        ArrayList<String> newHypertension = new ArrayList<>();
+        ArrayList<String> newMedicine = new ArrayList<>();
+        ArrayList<Drawable> newIv = new ArrayList<>();
+        for (int i = MeasurementTimes-1; i >= 0; i--){
+            newDate.add(oldDate.get(i));
+            newSys.add(sys.get(i));
+            newDia.add(dia.get(i));
+            newHr.add(hr.get(i));
+            newHypertension.add(hypertension.get(i));
+            newMedicine.add(medicine.get(i));
+            newIv.add(iv.get(i));
+        }
+        Log.i(TAG + " RecycleView", "List num = " + MeasurementTimes);
+        adapterDome = new RecycleAdapterDome(this, newDate, newSys, newDia, newHr, newHypertension, newMedicine, newIv);
         StaggeredGridLayoutManager stagger = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(stagger);
-        //添加自定义分割线
-        //recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(adapterDome);
     }
 
     /**折線圖**/
-    public void MPAndroidChart()throws ParseException{
+    public void MPAndroidChart(List<String> date, List<String> sys, List<String> dia, List<String> hr, List<String> hypertension, List<String> medicine)throws ParseException{
         int hi, mx;
         lineChart = mBinding.lineChart;
         lineChart.setDrawGridBackground(false);//後臺繪製
@@ -135,27 +232,27 @@ public class material extends AppCompatActivity {
         lineChartData = new LineChartData(lineChart,this);
 
         //有無高血壓
-        if(list_Hypertension.get(MeasurementTimes-1).equals("有")){
+        if(hypertension.get(MeasurementTimes-1).equals("有")){
             //有無藥物控制
-            if(list_Medicine.get(MeasurementTimes-1).equals("有")){
+            if(medicine.get(MeasurementTimes-1).equals("有")){
                 hi = 160;
                 mx = 60;
-                lineChartData.LimitLine(Color.YELLOW, 140, "SBP");
-                lineChartData.LimitLine(Color.GREEN, 90, "DBP");
-                if ( showHR ) lineChartData.LimitLine(Color.argb(255,255,136,0) , 100, "HR");
+                lineChartData.LimitLine(Color.YELLOW, 140, "mmHg");
+                lineChartData.LimitLine(Color.GREEN, 90, "mmHg");
+                if ( showHR ) lineChartData.LimitLine(Color.argb(255,255,136,0) , 100, "Bpm");
             }else{
                 hi = 200;
                 mx = 60;
-                lineChartData.LimitLine(Color.YELLOW, 180, "SBP");
-                lineChartData.LimitLine(Color.GREEN, 110, "DBP");
-                if ( showHR ) lineChartData.LimitLine(Color.argb(255,255,136,0), 100, "HR");
+                lineChartData.LimitLine(Color.YELLOW, 180, "mmHg");
+                lineChartData.LimitLine(Color.GREEN, 110, "mmHg");
+                if ( showHR ) lineChartData.LimitLine(Color.argb(255,255,136,0), 100, "Bpm");
             }
         }else{
             hi = 160;
             mx = 60;
-            lineChartData.LimitLine(Color.YELLOW, 140, "SBP");
-            lineChartData.LimitLine(Color.GREEN, 90, "DBP");
-            if ( showHR ) lineChartData.LimitLine(Color.argb(255,255,136,0), 100, "HR");
+            lineChartData.LimitLine(Color.YELLOW, 140, "mmHg");
+            lineChartData.LimitLine(Color.GREEN, 90, "mmHg");
+            if ( showHR ) lineChartData.LimitLine(Color.argb(255,255,136,0), 100, "Bpm");
         }
 
         ArrayList<String> xData = new ArrayList<>();
@@ -170,53 +267,64 @@ public class material extends AppCompatActivity {
         xData.add(" ");
 
         if(MeasurementTimes != 0){
-            for (int i = MeasurementTimes-1; i >= 0; i--){
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                SimpleDateFormat sdf_ot = new SimpleDateFormat("MM/dd HH:mm");
-                //Log.i(TAG + " sdf gatTime", list_date.get(i));
-                Date date = sdf.parse(list_date.get(i));
-                xData.add(sdf_ot.format(date));
-                //Log.i(TAG + " sdf Time", sdf_ot.format(date));
+            switch (setTimeShow.get(0)){
+                case "1":
+                    for (int i = MeasurementTimes-1; i >= 0; i--)
+                        xData.add(DateToNewDate(date.get(i), "yyyy-MM-dd HH:mm:ss", "MM/dd HH:mm"));
+                    break;
+                case "2":
+                    for (int i = MeasurementTimes-1; i >= 0; i--)
+                        xData.add(DateToNewDate(date.get(i), "yyyy-MM-dd HH:mm:ss", "MM/dd"));
+                    break;
+                case "3":
+                    for (int i = MeasurementTimes-1; i >= 0; i--)
+                        xData.add(DateToNewDate(date.get(i), "yyyy-MM-dd HH:mm:ss", "MM月"));
+                    break;
+                default:
+                    for (int i = MeasurementTimes-1; i >= 0; i--)
+                        xData.add(DateToNewDate(date.get(i), "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss"));
+                    break;
             }
             for (int i = MeasurementTimes-1; i >= 0; i--){
-                yData_sys.add(new Entry(MeasurementTimes-i+1, Integer.parseInt(list_sys.get(i))));
-                yData_dia.add(new Entry(MeasurementTimes-i+1, Integer.parseInt(list_dia.get(i))));
-                yData_hr.add(new Entry(MeasurementTimes-i+1, Integer.parseInt(list_hr.get(i))));
+                yData_sys.add(new Entry(MeasurementTimes-i+1, Integer.parseInt(sys.get(i))));
+                yData_dia.add(new Entry(MeasurementTimes-i+1, Integer.parseInt(dia.get(i))));
+                yData_hr.add(new Entry(MeasurementTimes-i+1, Integer.parseInt(hr.get(i))));
                 //高血壓上限值設定
-                if(list_Hypertension.get(MeasurementTimes-1).equals("有")){
-                    if(list_Medicine.get(MeasurementTimes-1).equals("有")){
-                        if(Integer.parseInt(list_sys.get(i)) > hi) hi = Integer.parseInt(list_sys.get(i)) + 10;
-                        if(Integer.parseInt(list_dia.get(i)) > hi) hi = Integer.parseInt(list_dia.get(i)) + 10;
-                        if(Integer.parseInt(list_hr.get(i)) > hi) hi = Integer.parseInt(list_hr.get(i)) + 10;
-                        if(Integer.parseInt(list_sys.get(i)) < mx) mx = Integer.parseInt(list_sys.get(i)) - 10;
-                        if(Integer.parseInt(list_dia.get(i)) < mx) mx = Integer.parseInt(list_dia.get(i)) - 10;
-                        if(Integer.parseInt(list_hr.get(i)) < mx) mx = Integer.parseInt(list_hr.get(i)) - 10;
+                if(hypertension.get(MeasurementTimes-1).equals("有")){
+                    if(medicine.get(MeasurementTimes-1).equals("有")){
+                        if(Integer.parseInt(sys.get(i)) > hi) hi = Integer.parseInt(sys.get(i)) + 10;
+                        if(Integer.parseInt(dia.get(i)) > hi) hi = Integer.parseInt(dia.get(i)) + 10;
+                        if(Integer.parseInt(hr.get(i)) > hi) hi = Integer.parseInt(hr.get(i)) + 10;
+                        if(Integer.parseInt(sys.get(i)) < mx) mx = Integer.parseInt(sys.get(i)) - 10;
+                        if(Integer.parseInt(dia.get(i)) < mx) mx = Integer.parseInt(dia.get(i)) - 10;
+                        if(Integer.parseInt(hr.get(i)) < mx) mx = Integer.parseInt(hr.get(i)) - 10;
                     }else{
-                        if(Integer.parseInt(list_sys.get(i)) > hi) hi = Integer.parseInt(list_sys.get(i)) + 10;
-                        if(Integer.parseInt(list_dia.get(i)) > hi) hi = Integer.parseInt(list_dia.get(i)) + 10;
-                        if(Integer.parseInt(list_hr.get(i)) > hi) hi = Integer.parseInt(list_hr.get(i)) + 10;
-                        if(Integer.parseInt(list_sys.get(i)) < mx) mx = Integer.parseInt(list_sys.get(i)) - 10;
-                        if(Integer.parseInt(list_dia.get(i)) < mx) mx = Integer.parseInt(list_dia.get(i)) - 10;
-                        if(Integer.parseInt(list_hr.get(i)) < mx) mx = Integer.parseInt(list_hr.get(i)) - 10;
+                        if(Integer.parseInt(sys.get(i)) > hi) hi = Integer.parseInt(sys.get(i)) + 10;
+                        if(Integer.parseInt(dia.get(i)) > hi) hi = Integer.parseInt(dia.get(i)) + 10;
+                        if(Integer.parseInt(hr.get(i)) > hi) hi = Integer.parseInt(hr.get(i)) + 10;
+                        if(Integer.parseInt(sys.get(i)) < mx) mx = Integer.parseInt(sys.get(i)) - 10;
+                        if(Integer.parseInt(dia.get(i)) < mx) mx = Integer.parseInt(dia.get(i)) - 10;
+                        if(Integer.parseInt(hr.get(i)) < mx) mx = Integer.parseInt(hr.get(i)) - 10;
                     }
                 }else{
-                    if(Integer.parseInt(list_sys.get(i)) > hi) hi = Integer.parseInt(list_sys.get(i)) + 10;
-                    if(Integer.parseInt(list_dia.get(i)) > hi) hi = Integer.parseInt(list_dia.get(i)) + 10;
-                    if(Integer.parseInt(list_hr.get(i)) > hi) hi = Integer.parseInt(list_hr.get(i)) + 10;
-                    if(Integer.parseInt(list_sys.get(i)) < mx) mx = Integer.parseInt(list_sys.get(i)) - 10;
-                    if(Integer.parseInt(list_dia.get(i)) < mx) mx = Integer.parseInt(list_dia.get(i)) - 10;
-                    if(Integer.parseInt(list_hr.get(i)) < mx) mx = Integer.parseInt(list_hr.get(i)) - 10;
+                    if(Integer.parseInt(sys.get(i)) > hi) hi = Integer.parseInt(sys.get(i)) + 10;
+                    if(Integer.parseInt(dia.get(i)) > hi) hi = Integer.parseInt(dia.get(i)) + 10;
+                    if(Integer.parseInt(hr.get(i)) > hi) hi = Integer.parseInt(hr.get(i)) + 10;
+                    if(Integer.parseInt(sys.get(i)) < mx) mx = Integer.parseInt(sys.get(i)) - 10;
+                    if(Integer.parseInt(dia.get(i)) < mx) mx = Integer.parseInt(dia.get(i)) - 10;
+                    if(Integer.parseInt(hr.get(i)) < mx) mx = Integer.parseInt(hr.get(i)) - 10;
                 }
             }
 
-            yDataEnd_sys.add(new Entry(MeasurementTimes+1, Integer.parseInt(list_sys.get(0))));
-            yDataEnd_dia.add(new Entry(MeasurementTimes+1, Integer.parseInt(list_dia.get(0))));
-            yDataEnd_hr.add(new Entry(MeasurementTimes+1, Integer.parseInt(list_hr.get(0))));
+            yDataEnd_sys.add(new Entry(MeasurementTimes+1, Integer.parseInt(sys.get(0))));
+            yDataEnd_dia.add(new Entry(MeasurementTimes+1, Integer.parseInt(dia.get(0))));
+            yDataEnd_hr.add(new Entry(MeasurementTimes+1, Integer.parseInt(hr.get(0))));
         }
 
         lineChartData.initX(xData);
         lineChartData.initY(mx, hi);
         lineChartData.initDataSet(yData_sys, yData_dia, yData_hr, yDataEnd_sys, yDataEnd_dia, yDataEnd_hr, showHR);
+        lineChart.moveViewToX(date.size()-1);
     }
 
     /**HandlerThread**/
@@ -229,7 +337,7 @@ public class material extends AppCompatActivity {
                     case 1:
                         try {
                             //抓取姓名
-                            mBinding.name.setText(Mysql.getData("Login", "CardID", UserCardID, "cname"));
+                            Name = Mysql.getData("Login", "CardID", UserCardID, "cname");
                             //抓取用戶資料
                             UserData = Mysql.getDataArray("Field_GetUserData", UserCardID);
                         }catch (Exception e){
@@ -242,7 +350,7 @@ public class material extends AppCompatActivity {
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            recyclerView = findViewById(R.id.rv_data);
+                                            //解出陣列資料
                                             //獲取map集合中的所有鍵的Set集合, keySet()
                                             Set<String> keySet = UserData.keySet();
                                             //有了set集合就可以獲取迭代器
@@ -269,11 +377,24 @@ public class material extends AppCompatActivity {
                                             //氣泡排序(日期)
                                             invertOrderList();
 
-                                            mBinding.materialMeasurementNum.setText(String.valueOf(MeasurementTimes));
-                                            mBinding.materialAbnormalNum.setText(String.valueOf(MeasurementTimesDeviant));
+                                            //預載入資料
+                                            for (int i = 0; i < MeasurementTimes; i++) {
+                                                list_date_new.add(list_date.get(i));
+                                                list_sys_new.add(list_sys.get(i));
+                                                list_dia_new.add(list_dia.get(i));
+                                                list_hr_new.add(list_hr.get(i));
+                                                list_Hypertension_new.add(list_Hypertension.get(i));
+                                                list_Medicine_new.add(list_Medicine.get(i));
+                                                list_IV_new.add(list_IV.get(i));
+                                            }
+
                                             try {
-                                                RecycleView();
-                                                MPAndroidChart();
+                                                mBinding.name.setText(Name); //用戶姓名
+                                                mBinding.materialMeasurementNum.setText(String.valueOf(MeasurementTimes)); //測量次數
+                                                mBinding.materialAbnormalNum.setText(String.valueOf(MeasurementTimesDeviant)); //測量異常次數
+                                                RecycleView(list_date, list_sys, list_dia, list_hr, list_Hypertension, list_Medicine, list_IV);
+                                                MPAndroidChart(list_date, list_sys, list_dia, list_hr, list_Hypertension, list_Medicine);
+                                                mBinding.rlShow.setVisibility(View.VISIBLE); //顯示選單
                                             } catch (ParseException e) {
                                                 e.printStackTrace();
                                             }
@@ -281,17 +402,35 @@ public class material extends AppCompatActivity {
                                     });
                                 }
                                 //延遲時間(ms)
-                            }, 1000);
+                            }, 2000);
                         }catch (Exception e){
                             Log.d(TAG, "Layout Error...");
                         }
                         break;
                     case 2:
-                        try {
-                            MPAndroidChart();
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    MPAndroidChart(list_date_new, list_sys_new, list_dia_new, list_hr_new, list_Hypertension_new, list_Medicine_new);
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                        break;
+                    case 3:
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    RecycleView(list_date_new, list_sys_new, list_dia_new, list_hr_new, list_Hypertension_new, list_Medicine_new, list_IV_new);
+                                    MPAndroidChart(list_date_new, list_sys_new, list_dia_new, list_hr_new, list_Hypertension_new, list_Medicine_new);
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
                         break;
                     default:
                         break;
@@ -300,6 +439,19 @@ public class material extends AppCompatActivity {
         };
 
         mHandler.sendEmptyMessage( 1 ) ;
+    }
+
+    /**時間格式轉換**/
+    private String DateToNewDate(String date, String oldFormat, String newFormat) throws ParseException {
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat(oldFormat);
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf_ot = new SimpleDateFormat(newFormat);
+        if (date.length() == 0)
+            return null;
+        //Log.i(TAG + " sdf gatTime", list_date.get(i));
+        Date NewDate = sdf.parse(date);
+        assert NewDate != null;
+        return sdf_ot.format(NewDate);
+        //Log.i(TAG + " sdf Time", sdf_ot.format(date));
     }
 
     /**資料進行氣泡排序**/

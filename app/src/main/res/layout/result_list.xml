@@ -3,95 +3,99 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
-    android:padding="10dp"
+    android:layout_height="90dp"
     android:orientation="horizontal">
-
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginLeft="5dp"
-        android:adjustViewBounds="true"
-        android:maxHeight="40dp"
-        app:srcCompat="@drawable/ok" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingLeft="5dp"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/text_date"
+        android:padding="5dp">
+        <ImageView
+            android:id="@+id/image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
-            tools:text="2022/11/01"
-            android:textColor="@color/ash"/>
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="5dp"
+            android:adjustViewBounds="true"
+            android:maxHeight="40dp"
+            app:srcCompat="@drawable/ok" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/text_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                tools:text="2022/11/01"
+                android:textColor="@color/ash"/>
 
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1.8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="5dp"
-                    android:textSize="18sp"
-                    android:text="BP"
-                    android:textColor="@color/ash"/>
+                    android:layout_weight="1.8"
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/text_sys"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="38sp"
-                    tools:text="140"
-                    android:textColor="@color/ash"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="38sp"
-                    android:text="/"
-                    android:textColor="@color/ash"/>
-                <TextView
-                    android:id="@+id/text_dia"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="38sp"
-                    tools:text="80"
-                    android:textColor="@color/ash"/>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1.0">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="5dp"
+                        android:textSize="18sp"
+                        android:text="BP"
+                        android:textColor="@color/ash"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
+                    <TextView
+                        android:id="@+id/text_sys"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="38sp"
+                        tools:text="140"
+                        android:textColor="@color/ash"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="38sp"
+                        android:text="/"
+                        android:textColor="@color/ash"/>
+                    <TextView
+                        android:id="@+id/text_dia"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="38sp"
+                        tools:text="80"
+                        android:textColor="@color/ash"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="5dp"
-                    android:textSize="18sp"
-                    android:text="HR"
-                    android:textColor="@color/ash"/>
+                    android:layout_weight="1.0">
 
-                <TextView
-                    android:id="@+id/text_hr"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="38sp"
-                    tools:text="70"
-                    android:textColor="@color/ash"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="5dp"
+                        android:textSize="18sp"
+                        android:text="HR"
+                        android:textColor="@color/ash"/>
+
+                    <TextView
+                        android:id="@+id/text_hr"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="38sp"
+                        tools:text="70"
+                        android:textColor="@color/ash"/>
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

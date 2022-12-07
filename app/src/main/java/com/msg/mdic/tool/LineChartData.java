@@ -49,7 +49,7 @@ public class LineChartData {
 
     /**限制線*/
     public void LimitLine(int color, int high, String name){
-        LimitLine ll1 = new LimitLine(high, name + " " + high);
+        LimitLine ll1 = new LimitLine(high, high + " " + name);
         ll1.setLineWidth(2f);//線寬
         ll1.enableDashedLine(10f, 10f, 0f);//虛線
         ll1.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);//位置
@@ -179,7 +179,7 @@ public class LineChartData {
 
         xAxis.setLabelCount(dateList.size());//X軸標籤個數
         xAxis.setSpaceMin(0.5f);//折線起點距離左側Y軸距離
-        xAxis.setSpaceMax(0.5f);//折線終點距離右側Y軸距離
+        xAxis.setSpaceMax(2f);//折線終點距離右側Y軸距離
 
         xAxis.setDrawGridLines(false);//不顯示每個座標點對應X軸的線 (預設顯示)
 

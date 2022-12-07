@@ -63,10 +63,9 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="5dp"
                             android:layout_marginRight="5dp"
-                            android:text="null"
+                            android:text="讀取中..."
                             android:textSize="25sp"
-                            android:textColor="#444444"
-                            tools:text="null" />
+                            android:textColor="#444444"/>
 
                     </LinearLayout>
 
@@ -88,10 +87,9 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="5dp"
                             android:layout_marginRight="5dp"
-                            android:text="nu"
+                            android:text="0"
                             android:textSize="25sp"
-                            android:textColor="#444444"
-                            tools:text="0" />
+                            android:textColor="#444444"/>
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -117,10 +115,9 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="5dp"
                             android:layout_marginRight="5dp"
-                            android:text="nu"
+                            android:text="0"
                             android:textSize="25sp"
-                            android:textColor="#ff0000"
-                            tools:text="0"/>
+                            android:textColor="#ff0000"/>
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -131,15 +128,18 @@
 
                 </LinearLayout>
                 <RelativeLayout
+                    android:id="@+id/rl_show"
                     android:layout_width="155dp"
                     android:layout_height="match_parent"
                     android:paddingRight="20dp"
-                    android:paddingLeft="20dp">
+                    android:paddingLeft="20dp"
+                    android:visibility="invisible"
+                    tools:visibility="visible">
                     <Button
                         android:id="@+id/button_hr_show"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
                         android:backgroundTint="@color/ash"
                         android:text="Show 心律"
                         android:textColor="#ffffff" />
@@ -149,9 +149,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_below="@+id/button_hr_show"
-                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
                         android:backgroundTint="@color/white"
-                        android:text="顯示 時"
+                        android:text="時"
                         android:textColor="#666666"
                         android:textSize="21sp" />
                 </RelativeLayout>
@@ -167,7 +167,35 @@
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/lineChart"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"/>
+                android:layout_height="250dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:paddingBottom="5dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="----- SBP"
+                    android:textSize="20sp"
+                    android:textColor="@color/yellow"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:text="----- DBP"
+                    android:textSize="20sp"
+                    android:textColor="@color/green"/>
+                <TextView
+                    android:id="@+id/text_hr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:text="----- HR"
+                    android:textSize="20sp"
+                    android:textColor="@color/orange"/>
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
