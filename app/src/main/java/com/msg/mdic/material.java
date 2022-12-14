@@ -1,13 +1,11 @@
 package com.msg.mdic;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import java.text.ParseException;
@@ -18,7 +16,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
-import android.util.ArrayMap;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -34,10 +31,8 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -161,7 +156,7 @@ public class material extends AppCompatActivity {
                         try {
                             ListClear(); //清除舊資料
                             for (int i = 0; i < MeasurementTimes; i++) {
-                                String date = DateToNewDate(list_date.get(i), "yyyy-MM-dd HH:mm:ss", "MM/dd");
+                                String date = DateToNewDate(list_date.get(i), "yyyy-MM-dd HH:mm:ss", "yyyy年MM月dd日");
                                 if (list_day.get(date) == null){
                                     list_day.put(date, list_sys.get(i) + " " + list_dia.get(i) + " " + list_hr.get(i) + " " + list_res.get(i) + " " + list_Hypertension.get(i) + " " + list_Medicine.get(i));
                                 } else {
@@ -217,7 +212,7 @@ public class material extends AppCompatActivity {
                                     } else list_IV_new.add(getResources().getDrawable(R.drawable.ok));
                                 }
                             }
-
+                            invertOrderListNew("yyyy年MM月dd日"); //排序資料
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
@@ -226,7 +221,7 @@ public class material extends AppCompatActivity {
                         try {
                             ListClear(); //清除舊資料
                             for (int i = 0; i < MeasurementTimes; i++) {
-                                String date = DateToNewDate(list_date.get(i), "yyyy-MM-dd HH:mm:ss", "MM月");
+                                String date = DateToNewDate(list_date.get(i), "yyyy-MM-dd HH:mm:ss", "yyyy年MM月");
                                 if (list_moon.get(date) == null){
                                     list_moon.put(date, list_sys.get(i) + " " + list_dia.get(i) + " " + list_hr.get(i) + " " + list_res.get(i) + " " + list_Hypertension.get(i) + " " + list_Medicine.get(i));
                                 } else {
@@ -282,7 +277,7 @@ public class material extends AppCompatActivity {
                                     } else list_IV_new.add(getResources().getDrawable(R.drawable.ok));
                                 }
                             }
-
+                            invertOrderListNew("yyyy年MM月"); //排序資料
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
@@ -308,8 +303,8 @@ public class material extends AppCompatActivity {
         if(MeasurementTimes != 0) {
             switch (setTimeShow.get(0)) {
                 case "1":
-                    for (int i = MeasurementTimes - 1; i >= 0; i--) {
-                        newDate.add(DateToNewDate(date.get(i), "yyyy-MM-dd HH:mm:ss", "MM/dd HH:mm:ss"));
+                    for (int i = 0; i <= MeasurementTimes - 1; i++) {
+                        newDate.add(DateToNewDate(date.get(i), "yyyy-MM-dd HH:mm:ss", "MM月dd日 HH:mm:ss"));
                         newSys.add(sys.get(i));
                         newDia.add(dia.get(i));
                         newHr.add(hr.get(i));
@@ -320,7 +315,7 @@ public class material extends AppCompatActivity {
                     Log.i(TAG + " RecycleView", "MeasurementTimes = " + MeasurementTimes);
                     break;
                 case "2":
-                    for (int i = MeasurementTimesDay - 1; i >= 0; i--){
+                    for (int i = 0; i <= MeasurementTimesDay - 1; i++){
                         newDate.add(date.get(i));
                         newSys.add(sys.get(i));
                         newDia.add(dia.get(i));
@@ -332,7 +327,7 @@ public class material extends AppCompatActivity {
                     Log.i(TAG + " RecycleView", "MeasurementTimesDay = " + MeasurementTimesDay);
                     break;
                 case "3":
-                    for (int i = MeasurementTimesMoon - 1; i >= 0; i--){
+                    for (int i = 0; i <= MeasurementTimesMoon - 1; i++){
                         newDate.add(date.get(i));
                         newSys.add(sys.get(i));
                         newDia.add(dia.get(i));
@@ -411,7 +406,15 @@ public class material extends AppCompatActivity {
             switch (setTimeShow.get(0)){
                 case "1":
                     for (int i = MT-1; i >= 0; i--)
-                        xData.add(DateToNewDate(date.get(i), "yyyy-MM-dd HH:mm:ss", "MM/dd HH:mm"));
+                        xData.add(DateToNewDate(date.get(i), "yyyy-MM-dd HH:mm:ss", "MM/dd-HH:mm"));
+                    break;
+                case "2":
+                    for (int i = MT-1; i >= 0; i--)
+                        xData.add(DateToNewDate(date.get(i), "yyyy年MM月dd日", "yy-MM/dd"));
+                    break;
+                case "3":
+                    for (int i = MT-1; i >= 0; i--)
+                        xData.add(DateToNewDate(date.get(i), "yyyy年MM月", "yy-MM"));
                     break;
                 default:
                     for (int i = MT-1; i >= 0; i--)
@@ -545,7 +548,30 @@ public class material extends AppCompatActivity {
                             @Override
                             public void run() {
                                 try {
-                                    MPAndroidChart(list_date_new, list_sys_new, list_dia_new, list_hr_new, list_Hypertension_new, list_Medicine_new, MeasurementTimes);
+                                    if ( list_date_new.size() == 0 )
+                                        MPAndroidChart(list_date, list_sys, list_dia, list_hr, list_Hypertension, list_Medicine, MeasurementTimes);
+                                    else
+                                        switch (setTimeShow.get(0)){
+                                            case "1":
+                                                MPAndroidChart(list_date_new, list_sys_new, list_dia_new, list_hr_new, list_Hypertension_new, list_Medicine_new, MeasurementTimes);
+                                                Log.i(TAG + " setText MeasurementTimes", String.valueOf(MeasurementTimes));
+                                                mBinding.materialMeasurementNum.setText(String.valueOf(MeasurementTimes)); //測量次數
+                                                mBinding.materialAbnormalNum.setText(String.valueOf(MeasurementTimesDeviant)); //測量異常次數
+                                            case "2":
+                                                MPAndroidChart(list_date_new, list_sys_new, list_dia_new, list_hr_new, list_Hypertension_new, list_Medicine_new, MeasurementTimesDay);
+                                                Log.i(TAG + " setText MeasurementTimes", String.valueOf(MeasurementTimes));
+                                                mBinding.materialMeasurementNum.setText(String.valueOf(MeasurementTimesDay)); //測量次數
+                                                mBinding.materialAbnormalNum.setText(String.valueOf(MeasurementTimesDeviantDay)); //測量異常次數
+                                                break;
+                                            case "3":
+                                                MPAndroidChart(list_date_new, list_sys_new, list_dia_new, list_hr_new, list_Hypertension_new, list_Medicine_new, MeasurementTimesMoon);
+                                                Log.i(TAG + " setText MeasurementTimes", String.valueOf(MeasurementTimes));
+                                                mBinding.materialMeasurementNum.setText(String.valueOf(MeasurementTimesMoon)); //測量次數
+                                                mBinding.materialAbnormalNum.setText(String.valueOf(MeasurementTimesDeviantMoon)); //測量異常次數
+                                                break;
+                                            default:
+                                                break;
+                                        }
                                 } catch (ParseException e) {
                                     e.printStackTrace();
                                 }
@@ -633,7 +659,7 @@ public class material extends AppCompatActivity {
                 ParsePosition pos2 = new ParsePosition(0);
                 d1 = sdf.parse(list_date.get(i), pos1);
                 d2 = sdf.parse(list_date.get(j), pos2);
-                if(d2.before(d1)){//如果日期靠前，则换顺序
+                if(d1.before(d2)){//如果日期靠前，则换顺序
                     //date
                     temp_r = list_date.get(i);
                     list_date.set(i, list_date.get(j));
@@ -669,7 +695,55 @@ public class material extends AppCompatActivity {
                 }
             }
         }
-    }  
+    }
+
+    /**資料進行氣泡排序(new)**/
+    private void invertOrderListNew(String set){
+        SimpleDateFormat sdf = new SimpleDateFormat(set);
+        Date d1;
+        Date d2;
+        String temp_r;
+        Drawable iv;
+        //这是一个冒泡排序，将大的放在数组前面
+        for(int i=0; i<list_date_new.size()-1; i++){
+            for(int j=i+1; j<list_date_new.size();j++){
+                ParsePosition pos1 = new ParsePosition(0);
+                ParsePosition pos2 = new ParsePosition(0);
+                d1 = sdf.parse(list_date_new.get(i), pos1);
+                d2 = sdf.parse(list_date_new.get(j), pos2);
+                if(d1.before(d2)){//如果日期靠前，则换顺序
+                    //date
+                    temp_r = list_date_new.get(i);
+                    list_date_new.set(i, list_date_new.get(j));
+                    list_date_new.set(j, temp_r);
+                    //sys
+                    temp_r = list_sys_new.get(i);
+                    list_sys_new.set(i, list_sys_new.get(j));
+                    list_sys_new.set(j, temp_r);
+                    //dia
+                    temp_r = list_dia_new.get(i);
+                    list_dia_new.set(i, list_dia_new.get(j));
+                    list_dia_new.set(j, temp_r);
+                    //hr
+                    temp_r = list_hr_new.get(i);
+                    list_hr_new.set(i, list_hr_new.get(j));
+                    list_hr_new.set(j, temp_r);
+                    //Hypertension
+                    temp_r = list_Hypertension_new.get(i);
+                    list_Hypertension_new.set(i, list_Hypertension_new.get(j));
+                    list_Hypertension_new.set(j, temp_r);
+                    //Medicine
+                    temp_r = list_Medicine_new.get(i);
+                    list_Medicine_new.set(i, list_Medicine_new.get(j));
+                    list_Medicine_new.set(j, temp_r);
+                    //iv
+                    iv = list_IV_new.get(i);
+                    list_IV_new.set(i, list_IV_new.get(j));
+                    list_IV_new.set(j, iv);
+                }
+            }
+        }
+    }
 
     /**隱藏狀態列和導航欄**/
     public void hideNav() {
