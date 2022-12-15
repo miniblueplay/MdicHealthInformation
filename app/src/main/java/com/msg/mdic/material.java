@@ -3,6 +3,8 @@ package com.msg.mdic;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
@@ -21,9 +23,14 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.LinearLayout;
+import android.widget.ToggleButton;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
+import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.msg.mdic.adapter.RecycleAdapterDome;
 import com.msg.mdic.databinding.ActivityMaterialBinding;
 import com.msg.mdic.tool.LineChartData;
@@ -87,6 +94,10 @@ public class material extends AppCompatActivity {
     private boolean showHR = true;
     private final List<String> setTimeShow = new  ArrayList<>();
 
+    //switch buttons
+
+    //test
+    LinearLayout linearLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,7 +140,8 @@ public class material extends AppCompatActivity {
         setTimeShow.add(1, "時");
         setTimeShow.add(2, "日");
         setTimeShow.add(3, "月");
-        
+
+        /*
         mBinding.buttonDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -163,7 +175,48 @@ public class material extends AppCompatActivity {
                 mHandler.sendEmptyMessage( 3 ) ;
             }
         });
+        */
 
+        //instance all of the switch buttons
+        MaterialButtonToggleGroup materialButtonToggleGroup = findViewById(R.id.toggleBtn);
+        materialButtonToggleGroup.addOnButtonCheckedListener((group, check, isCheck) -> {
+
+            if(isCheck) {
+                if(check == R.id.switchBtnHr) {
+                    setTimeShow.set(0,"1");
+                } else if(check == R.id.switchBtnDay) {
+                    setTimeShow.set(0,"2");
+                } else if(check == R.id.switchBtnMonth) {
+                    setTimeShow.set(0,"3");
+                }
+            }
+            mBinding.buttonDate.setText(setTimeShow.get(Integer.parseInt(setTimeShow.get(0))));
+            switch (setTimeShow.get(0)){
+                case "1": //時
+                    for (int i = 0; i < MeasurementTimes; i++) {
+                        list_date_new.add(list_date.get(i));
+                        list_sys_new.add(list_sys.get(i));
+                        list_dia_new.add(list_dia.get(i));
+                        list_hr_new.add(list_hr.get(i));
+                        list_Hypertension_new.add(list_Hypertension.get(i));
+                        list_Medicine_new.add(list_Medicine.get(i));
+                        list_IV_new.add(list_IV.get(i));
+                    }
+                    break;
+                case "2": //日
+                    for (int i = 0; i < MeasurementTimes; i++) {
+
+                    }
+                    break;
+                case "3": //月
+                    for (int i = 0; i < MeasurementTimes; i++) {
+
+                    }
+                    break;
+                default:break;
+            }
+            mHandler.sendEmptyMessage( 3 ) ;
+        });
     }
 
     /**數據列表**/
@@ -209,10 +262,13 @@ public class material extends AppCompatActivity {
         }
         Log.i(TAG + " RecycleView", "List num = " + MeasurementTimes);
         adapterDome = new RecycleAdapterDome(this, newDate, newSys, newDia, newHr, newHypertension, newMedicine, newIv);
-        StaggeredGridLayoutManager stagger = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(stagger);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
-        recyclerView.addItemDecoration(dividerItemDecoration);
+        //adapterDome.notifyItemInserted(10);
+        //StaggeredGridLayoutManager stagger = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
+        //recyclerView.setLayoutManager(stagger);
+        //recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 1));
+        //DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        //recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(adapterDome);
     }
 

@@ -216,7 +216,7 @@ public class LineChartData {
 
     public void initY(int min, int max) {
         YAxis rightAxis = lineChart.getAxisRight();//獲取右側的軸線
-        //rightAxis.setEnabled(false);//不顯示右側Y軸
+        rightAxis.setEnabled(false);//不顯示右側Y軸
         YAxis leftAxis = lineChart.getAxisLeft();//獲取左側的軸線
 
         //左側的軸線
@@ -227,12 +227,15 @@ public class LineChartData {
         leftAxis.setAxisMaximum(max);//Y軸標籤最大值
         leftAxis.setValueFormatter(new MyYAxisValueFormatter());
         //右側的軸線
+
         rightAxis.setLabelCount(5);//Y軸標籤個數
         rightAxis.setTextColor(Color.WHITE);//Y軸標籤顏色
         rightAxis.setTextSize(12);//Y軸標籤大小
         rightAxis.setAxisMinimum(min);//Y軸標籤最小值
         rightAxis.setAxisMaximum(max);//Y軸標籤最大值
         rightAxis.setValueFormatter(new MyYAxisValueFormatter());
+
+
     }
 
     Runnable hideHighLight = new Runnable() {

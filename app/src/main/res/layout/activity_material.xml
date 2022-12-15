@@ -53,7 +53,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="性名："
+                            android:text="姓名："
                             android:textColor="#444444"
                             android:textSize="25sp"/>
 
@@ -140,6 +140,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
+                        android:layout_marginTop="40dp"
                         android:backgroundTint="@color/ash"
                         android:text="Show 心律"
                         android:textColor="#ffffff" />
@@ -153,7 +154,8 @@
                         android:backgroundTint="@color/white"
                         android:text="時"
                         android:textColor="#666666"
-                        android:textSize="21sp" />
+                        android:textSize="21sp"
+                        android:visibility="invisible"/>
                 </RelativeLayout>
             </LinearLayout>
         </RelativeLayout>
@@ -177,14 +179,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="----- SBP"
+                    android:text="━━ SBP"
                     android:textSize="20sp"
                     android:textColor="@color/yellow"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
-                    android:text="----- DBP"
+                    android:text="━━ DBP"
                     android:textSize="20sp"
                     android:textColor="@color/green"/>
                 <TextView
@@ -192,7 +194,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
-                    android:text="----- HR"
+                    android:text="━━ HR"
                     android:textSize="20sp"
                     android:textColor="@color/orange"/>
             </LinearLayout>
@@ -201,12 +203,51 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="24dp">
+            android:padding="24dp"
+            android:orientation="vertical">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="150px">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_centerInParent="true">
+                    <com.google.android.material.button.MaterialButtonToggleGroup
+                        android:id="@+id/toggleBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:singleSelection="true">
+                        <Button
+                            android:id="@+id/switchBtnHr"
+                            android:layout_width="200px"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_height="match_parent"
+                            android:textColor="@color/black"
+                            android:text="時" />
+                        <Button
+                            android:id="@+id/switchBtnDay"
+                            android:layout_width="200px"
+                            android:layout_height="match_parent"
+                            android:textColor="@color/black"
+                            android:text="日"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+                        <Button
+                            android:id="@+id/switchBtnMonth"
+                            android:layout_width="200px"
+                            android:layout_height="match_parent"
+                            android:textColor="@color/black"
+                            android:text="月"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+                    </com.google.android.material.button.MaterialButtonToggleGroup>
 
+
+                </LinearLayout>
+            </RelativeLayout>
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_data"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:background="@drawable/corners_bg"/>
         </LinearLayout>
 

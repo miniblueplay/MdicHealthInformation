@@ -59,7 +59,7 @@ public class RecycleAdapterDome extends RecyclerView.Adapter<RecycleAdapterDome.
     @Override
     public RecycleAdapterDome.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         //創建ViewHolder，返回每一項的佈局
-        inflater = LayoutInflater.from(context).inflate(R.layout.result_list,parent,false);
+        inflater = LayoutInflater.from(parent.getContext()).inflate(R.layout.result_list,parent,false);
         MyViewHolder myViewHolder = new MyViewHolder(inflater);
         return myViewHolder;
     }
@@ -102,6 +102,7 @@ public class RecycleAdapterDome extends RecyclerView.Adapter<RecycleAdapterDome.
             if(dia > 90)holder.textView_dia.setTextColor(Color.RED);
             if(hr > 100)holder.textView_hr.setTextColor(Color.RED);
         }
+
     }
 
     @Override
