@@ -33,6 +33,7 @@ import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.msg.mdic.adapter.RecycleAdapterDome;
+import com.msg.mdic.adapter.RecycleAdapterDomeUser;
 import com.msg.mdic.databinding.ActivityMaterialBinding;
 import com.msg.mdic.tool.LineChartData;
 import com.msg.mdic.tool.MysqlCon;
@@ -48,7 +49,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 
-public class material extends AppCompatActivity {
+public class material extends AppCompatActivity implements RecycleAdapterDome.OnItemClickHandler{
 
     protected ActivityMaterialBinding mBinding;
 
@@ -86,16 +87,16 @@ public class material extends AppCompatActivity {
     //依時間顯示用列表數據
     int MeasurementTimesDay = 0, MeasurementTimesDeviantDay = 0;
     int MeasurementTimesMoon = 0, MeasurementTimesDeviantMoon = 0;
-    private final List<String> list_date_new = new ArrayList<>();
-    private final List<String> list_sys_new = new ArrayList<>();
-    private final List<String> list_dia_new = new ArrayList<>();
-    private final List<String> list_hr_new = new ArrayList<>();
-    private final List<String> list_res_new = new ArrayList<>();
-    private final List<String> list_Hypertension_new = new ArrayList<>();
-    private final List<String> list_Medicine_new = new ArrayList<>();
-    private final List<Drawable> list_IV_new = new ArrayList<>();
-    private Map<String, String> list_day = new TreeMap<>(); //日
-    private Map<String, String> list_moon = new TreeMap<>(); //月
+    private  List<String> list_date_new = new ArrayList<>();
+    private  List<String> list_sys_new = new ArrayList<>();
+    private  List<String> list_dia_new = new ArrayList<>();
+    private  List<String> list_hr_new = new ArrayList<>();
+    private  List<String> list_res_new = new ArrayList<>();
+    private  List<String> list_Hypertension_new = new ArrayList<>();
+    private  List<String> list_Medicine_new = new ArrayList<>();
+    private  List<Drawable> list_IV_new = new ArrayList<>();
+    private  Map<String, String> list_day_new = new TreeMap<>(); //日
+    private  Map<String, String> list_moon_new = new TreeMap<>(); //月
 
 
     //設定
@@ -144,21 +145,26 @@ public class material extends AppCompatActivity {
                 mHandler.sendEmptyMessage( 2 ) ;
             }
         });
-        
-        mBinding.buttonDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {}
-        });
 
         //instance all of the switch buttons
         MaterialButtonToggleGroup materialButtonToggleGroup = findViewById(R.id.toggleBtn);
         materialButtonToggleGroup.addOnButtonCheckedListener((group, check, isCheck) -> {
             if (group.getCheckedButtonId() == R.id.switchBtnHr && !Objects.equals(setTimeShow.get(0), "1")){
+                ListClear(); //清除舊資料
                 setTimeShow.set(0, "1");
+                ListClear(); //清除舊資料
+                for (int i = 0; i < MeasurementTimes; i++) {
+                    list_date_new.add(list_date.get(i));
+                    list_sys_new.add(list_sys.get(i));
+                    list_dia_new.add(list_dia.get(i));
+                    list_hr_new.add(list_hr.get(i));
+                    list_res_new.add(list_res.get(i));
+                    list_Hypertension_new.add(list_Hypertension.get(i));
+                    list_Medicine_new.add(list_Medicine.get(i));
+                    list_IV_new.add(list_IV.get(i));
+                }
                 mHandler.sendEmptyMessage( 3 ) ;
-                Log.i(TAG + "setText MeasurementTimes", String.valueOf(MeasurementTimes));
-                //mBinding.materialMeasurementNum.setText(String.valueOf(MeasurementTimes)); //測量次數
-                //mBinding.materialAbnormalNum.setText(String.valueOf(MeasurementTimesDeviant)); //測量異常次數
+                Log.i(TAG + " case1 setText MeasurementTimes", String.valueOf(MeasurementTimes));
             }
             else if (group.getCheckedButtonId() == R.id.switchBtnDay){
                 setTimeShow.set(0, "2");
@@ -166,28 +172,26 @@ public class material extends AppCompatActivity {
                     ListClear(); //清除舊資料
                     for (int i = 0; i < MeasurementTimes; i++) {
                         String date = DateToNewDate(list_date.get(i), "yyyy-MM-dd HH:mm:ss", "yyyy年MM月dd日");
-                        if (list_day.get(date) == null){
-                            list_day.put(date, list_sys.get(i) + " " + list_dia.get(i) + " " + list_hr.get(i) + " " + list_res.get(i) + " " + list_Hypertension.get(i) + " " + list_Medicine.get(i));
+                        if (list_day_new.get(date) == null){
+                            list_day_new.put(date, list_sys.get(i) + " " + list_dia.get(i) + " " + list_hr.get(i) + " " + list_res.get(i) + " " + list_Hypertension.get(i) + " " + list_Medicine.get(i));
                         } else {
                             int sys ,dia, hr;
-                            Log.i(TAG + " 日資料", date + " = " + list_day.get(date));
-                            String[] detailed = list_day.get(date).split("\\s+");
+                            Log.i(TAG + " 日資料", date + " = " + list_day_new.get(date));
+                            String[] detailed = list_day_new.get(date).split("\\s+");
                             sys = (Integer.parseInt(detailed[0]) + Integer.parseInt(list_sys.get(i)))/2;
                             dia = (Integer.parseInt(detailed[1]) + Integer.parseInt(list_dia.get(i)))/2;
                             hr = (Integer.parseInt(detailed[2]) + Integer.parseInt(list_hr.get(i)))/2;
-                            list_day.put(date, sys + " " + dia + " " + hr + " " + detailed[3] + " " + detailed[4] + " " + detailed[5]);
+                            list_day_new.put(date, sys + " " + dia + " " + hr + " " + detailed[3] + " " + detailed[4] + " " + detailed[5]);
                         }
                     }
                     //解出陣列資料
                     //獲取map集合中的所有鍵的Set集合, keySet()
-                    Set<String> keySet = list_day.keySet();
+                    Set<String> keySet = list_day_new.keySet();
                     //有了set集合就可以獲取迭代器
-                    MeasurementTimesDay = 0;
-                    MeasurementTimesDeviantDay = 0;
                     for (String key : keySet) {
                         MeasurementTimesDay++;
                         //有了鍵就可以通過map集合的get方法獲取其對應的値
-                        String value = list_day.get(key);
+                        String value = list_day_new.get(key);
                         list_date_new.add(key);
                         String[] detailed = value.split("\\s+");
                         list_sys_new.add(detailed[0]);
@@ -236,28 +240,26 @@ public class material extends AppCompatActivity {
                     ListClear(); //清除舊資料
                     for (int i = 0; i < MeasurementTimes; i++) {
                         String date = DateToNewDate(list_date.get(i), "yyyy-MM-dd HH:mm:ss", "yyyy年MM月");
-                        if (list_moon.get(date) == null){
-                            list_moon.put(date, list_sys.get(i) + " " + list_dia.get(i) + " " + list_hr.get(i) + " " + list_res.get(i) + " " + list_Hypertension.get(i) + " " + list_Medicine.get(i));
+                        if (list_moon_new.get(date) == null){
+                            list_moon_new.put(date, list_sys.get(i) + " " + list_dia.get(i) + " " + list_hr.get(i) + " " + list_res.get(i) + " " + list_Hypertension.get(i) + " " + list_Medicine.get(i));
                         } else {
                             int sys ,dia, hr;
-                            Log.i(TAG + " 月資料", date + " = " + list_moon.get(date));
-                            String[] detailed = list_moon.get(date).split("\\s+");
+                            Log.i(TAG + " 月資料", date + " = " + list_moon_new.get(date));
+                            String[] detailed = list_moon_new.get(date).split("\\s+");
                             sys = (Integer.parseInt(detailed[0]) + Integer.parseInt(list_sys.get(i)))/2;
                             dia = (Integer.parseInt(detailed[1]) + Integer.parseInt(list_dia.get(i)))/2;
                             hr = (Integer.parseInt(detailed[2]) + Integer.parseInt(list_hr.get(i)))/2;
-                            list_moon.put(date, sys + " " + dia + " " + hr + " " + detailed[3] + " " + detailed[4] + " " + detailed[5]);
+                            list_moon_new.put(date, sys + " " + dia + " " + hr + " " + detailed[3] + " " + detailed[4] + " " + detailed[5]);
                         }
                     }
                     //解出陣列資料
                     //獲取map集合中的所有鍵的Set集合, keySet()
-                    Set<String> keySet = list_moon.keySet();
+                    Set<String> keySet = list_moon_new.keySet();
                     //有了set集合就可以獲取迭代器
-                    MeasurementTimesMoon = 0;
-                    MeasurementTimesDeviantMoon = 0;
                     for (String key : keySet) {
                         MeasurementTimesMoon++;
                         //有了鍵就可以通過map集合的get方法獲取其對應的値
-                        String value = list_moon.get(key);
+                        String value = list_moon_new.get(key);
                         list_date_new.add(key);
                         String[] detailed = value.split("\\s+");
                         list_sys_new.add(detailed[0]);
@@ -424,8 +426,6 @@ public class material extends AppCompatActivity {
                 case "1":
                     for (int i = MT-1; i >= 0; i--)
                         xData.add(DateToNewDate(date.get(i), "yyyy-MM-dd HH:mm:ss", "MM/dd-HH:mm"));
-                    xData.add(" ");
-                    xData.add(" ");
                     break;
                 case "2":
                     for (int i = MT-1; i >= 0; i--)
@@ -570,21 +570,13 @@ public class material extends AppCompatActivity {
                                     else
                                         switch (setTimeShow.get(0)){
                                             case "1":
-                                                MPAndroidChart(list_date, list_sys, list_dia, list_hr, list_Hypertension, list_Medicine, MeasurementTimes);
-                                                //Log.i(TAG + " setText MeasurementTimes", String.valueOf(MeasurementTimes));
-                                                //mBinding.materialMeasurementNum.setText(String.valueOf(MeasurementTimes)); //測量次數
-                                                //mBinding.materialAbnormalNum.setText(String.valueOf(MeasurementTimesDeviant)); //測量異常次數
+                                                MPAndroidChart(list_date_new, list_sys_new, list_dia_new, list_hr_new, list_Hypertension_new, list_Medicine_new, MeasurementTimes);
+                                                break;
                                             case "2":
                                                 MPAndroidChart(list_date_new, list_sys_new, list_dia_new, list_hr_new, list_Hypertension_new, list_Medicine_new, MeasurementTimesDay);
-                                                //Log.i(TAG + " setText MeasurementTimes", String.valueOf(MeasurementTimes));
-                                                //mBinding.materialMeasurementNum.setText(String.valueOf(MeasurementTimesDay)); //測量次數
-                                                //mBinding.materialAbnormalNum.setText(String.valueOf(MeasurementTimesDeviantDay)); //測量異常次數
                                                 break;
                                             case "3":
                                                 MPAndroidChart(list_date_new, list_sys_new, list_dia_new, list_hr_new, list_Hypertension_new, list_Medicine_new, MeasurementTimesMoon);
-                                                //Log.i(TAG + " setText MeasurementTimes", String.valueOf(MeasurementTimes));
-                                                //mBinding.materialMeasurementNum.setText(String.valueOf(MeasurementTimesMoon)); //測量次數
-                                                //mBinding.materialAbnormalNum.setText(String.valueOf(MeasurementTimesDeviantMoon)); //測量異常次數
                                                 break;
                                             default:
                                                 break;
@@ -600,16 +592,15 @@ public class material extends AppCompatActivity {
                             @Override
                             public void run() {
                                 try {
+                                    RecycleView(list_date_new, list_sys_new, list_dia_new, list_hr_new, list_Hypertension_new, list_Medicine_new, list_IV_new);
                                     switch (setTimeShow.get(0)){
                                         case "1":
-                                            RecycleView(list_date, list_sys, list_dia, list_hr, list_Hypertension, list_Medicine, list_IV);
-                                            MPAndroidChart(list_date, list_sys, list_dia, list_hr, list_Hypertension, list_Medicine, MeasurementTimes);
+                                            MPAndroidChart(list_date_new, list_sys_new, list_dia_new, list_hr_new, list_Hypertension_new, list_Medicine_new, MeasurementTimes);
+                                            break;
                                         case "2":
-                                            RecycleView(list_date_new, list_sys_new, list_dia_new, list_hr_new, list_Hypertension_new, list_Medicine_new, list_IV_new);
                                             MPAndroidChart(list_date_new, list_sys_new, list_dia_new, list_hr_new, list_Hypertension_new, list_Medicine_new, MeasurementTimesDay);
                                             break;
                                         case "3":
-                                            RecycleView(list_date_new, list_sys_new, list_dia_new, list_hr_new, list_Hypertension_new, list_Medicine_new, list_IV_new);
                                             MPAndroidChart(list_date_new, list_sys_new, list_dia_new, list_hr_new, list_Hypertension_new, list_Medicine_new, MeasurementTimesMoon);
                                             break;
                                         default:
@@ -641,6 +632,13 @@ public class material extends AppCompatActivity {
             list_Hypertension_new.clear();
             list_Medicine_new.clear();
             list_IV_new.clear();
+            list_day_new.clear();
+            list_moon_new.clear();
+            MeasurementTimesDay = 0;
+            MeasurementTimesDeviantDay = 0;
+            MeasurementTimesMoon = 0;
+            MeasurementTimesDeviantMoon = 0;
+
         }
     }
 
@@ -773,4 +771,152 @@ public class material extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
     }
 
+    // 點擊事件
+    @Override
+    public void onItemClick(String text) {
+        Log.i(TAG + "TouchList", text);
+        if(text.length() == 11){
+            setTimeShow.set(0, "2");
+            try {
+                ListClear(); //清除舊資料
+                for (int i = 0; i < MeasurementTimes; i++) {
+                    String date = DateToNewDate(list_date.get(i), "yyyy-MM-dd HH:mm:ss", "yyyy年MM月dd日");
+                    String date_new = DateToNewDate(list_date.get(i), "yyyy-MM-dd HH:mm:ss", "yyyy年MM月dd日 HH:mm:ss");
+                    if(Objects.equals(date, text)){
+                        if (list_day_new.get(date) == null){
+                            list_day_new.put(date_new, list_sys.get(i) + " " + list_dia.get(i) + " " + list_hr.get(i) + " " + list_res.get(i) + " " + list_Hypertension.get(i) + " " + list_Medicine.get(i));
+                        } else {
+                            int sys ,dia, hr;
+                            Log.i(TAG + " 時資料", date_new + " = " + list_day_new.get(date));
+                            String[] detailed = list_day_new.get(date).split("\\s+");
+                            sys = (Integer.parseInt(detailed[0]) + Integer.parseInt(list_sys.get(i)))/2;
+                            dia = (Integer.parseInt(detailed[1]) + Integer.parseInt(list_dia.get(i)))/2;
+                            hr = (Integer.parseInt(detailed[2]) + Integer.parseInt(list_hr.get(i)))/2;
+                            list_day_new.put(date_new, sys + " " + dia + " " + hr + " " + detailed[3] + " " + detailed[4] + " " + detailed[5]);
+                        }
+                    }
+                }
+                //解出陣列資料
+                //獲取map集合中的所有鍵的Set集合, keySet()
+                Set<String> keySet = list_day_new.keySet();
+                //有了set集合就可以獲取迭代器
+                for (String key : keySet) {
+                    MeasurementTimesDay++;
+                    //有了鍵就可以通過map集合的get方法獲取其對應的値
+                    String value = list_day_new.get(key);
+                    list_date_new.add(key);
+                    String[] detailed = value.split("\\s+");
+                    list_sys_new.add(detailed[0]);
+                    list_dia_new.add(detailed[1]);
+                    list_hr_new.add(detailed[2]);
+                    //list_res_new.add(detailed[3]);
+                    list_Hypertension_new.add(detailed[4]);
+                    list_Medicine_new.add(detailed[5]);
+                    //有無高血壓
+                    if(detailed[4].equals("有")){
+                        //有無藥物控制
+                        if(detailed[5].equals("有")){
+                            //安全值 140/90 mmHg 100bpm
+                            if ( Integer.parseInt(detailed[0]) > 140 || Integer.parseInt(detailed[1]) > 90 || Integer.parseInt(detailed[2]) > 100){
+                                MeasurementTimesDeviantDay++;
+                                list_IV_new.add(getResources().getDrawable(R.drawable.no));
+                            } else list_IV_new.add(getResources().getDrawable(R.drawable.ok));
+
+                        }else{
+                            //安全值 180/110 mmHg 100bpm
+                            if ( Integer.parseInt(detailed[0]) > 180 || Integer.parseInt(detailed[1]) > 110 || Integer.parseInt(detailed[2]) > 100){
+                                MeasurementTimesDeviantDay++;
+                                list_IV_new.add(getResources().getDrawable(R.drawable.no));
+                            } else list_IV_new.add(getResources().getDrawable(R.drawable.ok));
+                        }
+                    }else{
+                        //安全值 140/90 mmHg 100bpm
+                        if ( Integer.parseInt(detailed[0]) > 140 || Integer.parseInt(detailed[1]) > 90 || Integer.parseInt(detailed[2]) > 100){
+                            MeasurementTimesDeviantDay++;
+                            list_IV_new.add(getResources().getDrawable(R.drawable.no));
+                        } else list_IV_new.add(getResources().getDrawable(R.drawable.ok));
+                    }
+                }
+                invertOrderListNew("yyyy年MM月dd日 HH:mm:ss"); //排序資料
+                mHandler.sendEmptyMessage( 3 ) ;
+                Log.i(TAG + " case2 setText MeasurementTimesDay", String.valueOf(MeasurementTimesDay));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }else if(text.length() == 8){
+            setTimeShow.set(0, "3");
+            try {
+                ListClear(); //清除舊資料
+                for (int i = 0; i < MeasurementTimes; i++) {
+                    String date = DateToNewDate(list_date.get(i), "yyyy-MM-dd HH:mm:ss", "yyyy年MM月");
+                    String date_new = DateToNewDate(list_date.get(i), "yyyy-MM-dd HH:mm:ss", "yyyy年MM月dd日");
+                    if(Objects.equals(date, text)){
+                        if (list_moon_new.get(date) == null){
+                            list_moon_new.put(date_new, list_sys.get(i) + " " + list_dia.get(i) + " " + list_hr.get(i) + " " + list_res.get(i) + " " + list_Hypertension.get(i) + " " + list_Medicine.get(i));
+                        } else {
+                            int sys ,dia, hr;
+                            Log.i(TAG + " 日資料", date_new + " = " + list_moon_new.get(date));
+                            String[] detailed = list_moon_new.get(date).split("\\s+");
+                            sys = (Integer.parseInt(detailed[0]) + Integer.parseInt(list_sys.get(i)))/2;
+                            dia = (Integer.parseInt(detailed[1]) + Integer.parseInt(list_dia.get(i)))/2;
+                            hr = (Integer.parseInt(detailed[2]) + Integer.parseInt(list_hr.get(i)))/2;
+                            list_moon_new.put(date_new, sys + " " + dia + " " + hr + " " + detailed[3] + " " + detailed[4] + " " + detailed[5]);
+                        }
+                    }
+                }
+                //解出陣列資料
+                //獲取map集合中的所有鍵的Set集合, keySet()
+                Set<String> keySet = list_moon_new.keySet();
+                //有了set集合就可以獲取迭代器
+                for (String key : keySet) {
+                    MeasurementTimesMoon++;
+                    //有了鍵就可以通過map集合的get方法獲取其對應的値
+                    String value = list_moon_new.get(key);
+                    list_date_new.add(key);
+                    String[] detailed = value.split("\\s+");
+                    list_sys_new.add(detailed[0]);
+                    list_dia_new.add(detailed[1]);
+                    list_hr_new.add(detailed[2]);
+                    //list_res_new.add(detailed[3]);
+                    list_Hypertension_new.add(detailed[4]);
+                    list_Medicine_new.add(detailed[5]);
+                    //有無高血壓
+                    if(detailed[4].equals("有")){
+                        //有無藥物控制
+                        if(detailed[5].equals("有")){
+                            //安全值 140/90 mmHg 100bpm
+                            if ( Integer.parseInt(detailed[0]) > 140 || Integer.parseInt(detailed[1]) > 90 || Integer.parseInt(detailed[2]) > 100){
+                                MeasurementTimesDeviantMoon++;
+                                list_IV_new.add(getResources().getDrawable(R.drawable.no));
+                            } else list_IV_new.add(getResources().getDrawable(R.drawable.ok));
+
+                        }else{
+                            //安全值 180/110 mmHg 100bpm
+                            if ( Integer.parseInt(detailed[0]) > 180 || Integer.parseInt(detailed[1]) > 110 || Integer.parseInt(detailed[2]) > 100){
+                                MeasurementTimesDeviantMoon++;
+                                list_IV_new.add(getResources().getDrawable(R.drawable.no));
+                            } else list_IV_new.add(getResources().getDrawable(R.drawable.ok));
+                        }
+                    }else{
+                        //安全值 140/90 mmHg 100bpm
+                        if ( Integer.parseInt(detailed[0]) > 140 || Integer.parseInt(detailed[1]) > 90 || Integer.parseInt(detailed[2]) > 100){
+                            MeasurementTimesDeviantMoon++;
+                            list_IV_new.add(getResources().getDrawable(R.drawable.no));
+                        } else list_IV_new.add(getResources().getDrawable(R.drawable.ok));
+                    }
+                }
+                invertOrderListNew("yyyy年MM月dd日"); //排序資料
+                mHandler.sendEmptyMessage( 3 ) ;
+                Log.i(TAG + " case3 setText MeasurementTimesMoon", String.valueOf(MeasurementTimesMoon));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // 移除事件
+    @Override
+    public void onItemRemove(int position, String text) {
+
+    }
 }

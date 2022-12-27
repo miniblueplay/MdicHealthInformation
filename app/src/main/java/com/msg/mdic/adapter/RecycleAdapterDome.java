@@ -27,6 +27,17 @@ public class RecycleAdapterDome extends RecyclerView.Adapter<RecycleAdapterDome.
     private List<Drawable> list_IV;
     private View inflater;
 
+    // 宣告interface
+    private OnItemClickHandler mClickHandler;
+
+    // 建立interface，命名為OnItemClickHandler，並在裡面寫好我們要發生的事件
+    public interface OnItemClickHandler {
+        // 提供onItemClick方法作為點擊事件，括號內為接受的參數
+        void onItemClick(String text);
+        // 提供onItemRemove做為移除項目的事件
+        void onItemRemove(int position, String text);
+    }
+
     class MyViewHolder extends RecyclerView.ViewHolder{
         TextView textView_date;
         TextView textView_sys;
@@ -40,6 +51,15 @@ public class RecycleAdapterDome extends RecyclerView.Adapter<RecycleAdapterDome.
             textView_dia = (TextView) itemView.findViewById(R.id.text_dia);
             textView_hr = (TextView) itemView.findViewById(R.id.text_hr);
             imageView_IV = (ImageView) itemView.findViewById(R.id.image);
+            // 點擊項目時
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String msg = list_date.get(getAdapterPosition());
+                    // 呼叫interface的method
+                    mClickHandler.onItemClick(msg);
+                }
+            });
         }
     }
 
@@ -53,6 +73,7 @@ public class RecycleAdapterDome extends RecyclerView.Adapter<RecycleAdapterDome.
         this.list_Hypertension = list_Hypertension;
         this.list_Medicine = list_Medicine;
         this.list_IV = list_IV;
+        mClickHandler = (OnItemClickHandler) context;
     }
 
     @NonNull
